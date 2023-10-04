@@ -40,5 +40,5 @@ elseif DIRECTION == 0 then
         turtle.down()
     end
 else
-    print("error")
+    print("error!")
 end
