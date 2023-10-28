@@ -54,7 +54,7 @@ function emptyInv()
     end
 end
 
-function findEChest()
+function findEChest()-- Echest is always in slot 1 anyway
     for n = 1,16,1 do
         if turtle.getItemCount(n) ~= 0 then
             if turtle.getItemDetail(n).name == "enderstorage:ender_chest" then
@@ -75,12 +75,13 @@ function existsTable(tableIn, element)
 end
 
 function calculateFuelExpenditure() -- Consider return
-    local distance
+    
+    local distance = DEPTH*((WIDTH*WIDTH))
+
     if RETURNCOND == true then
-        distance = DEPTH*((WIDTH*WIDTH)) + DEPTH
-    else
-        distance = DEPTH*((WIDTH*WIDTH))
+        distance = distance + DEPTH
     end
+
     if turtle.getFuelLevel() > distance then
         return true
     else
@@ -91,6 +92,7 @@ end
 function minesquare()
     turtle.digDown()
     turtle.down()
+    --
     if isEven == true then
         local halfWidth = WIDTH/2
         for count = 1,WIDTH/2,1 do
