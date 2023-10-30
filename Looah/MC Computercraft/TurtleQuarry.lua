@@ -54,14 +54,12 @@ function emptyInv()
     end
 end
 
-function findEChest()-- Echest is always in slot 1 anyway, add something that looks for slot one first, then searches
-    --E-chest is in slot 1 naturally
-    if turtle.getItemCount(1) ~= 0 then
-        if turtle.getItemDetail(n).name == "enderstorage:ender_chest" then
+function findEChest()
+    --E-chest is in slot 1 naturally, unless moved.
+    if turtle.getItemCount(1) ~= 0 and turtle.getItemDetail(1).name == "enderstorage:ender_chest" then
             return 1
-        end
     end
-    -- If the e-chest was moved
+    -- If the e-chest was moved then just brute force search.
     for n = 1,16,1 do
         if turtle.getItemCount(n) ~= 0 then
             if turtle.getItemDetail(n).name == "enderstorage:ender_chest" then
@@ -82,7 +80,6 @@ function existsTable(tableIn, element)
 end
 
 function calculateFuelExpenditure() -- Consider return
-
     local distance = DEPTH*((WIDTH*WIDTH))
 
     if RETURNCOND == true then
@@ -99,16 +96,17 @@ end
 function minesquare() --Can redo this, move WIDTH blocks and just toggle moving left & right
     turtle.digDown()
     turtle.down()
-    --
-    if isEven == true then
-        local halfWidth = WIDTH/2
-        for count = 1,WIDTH/2,1 do
+
+    local halfWidth = math.floor(WIDTH/2) -- floor function used in case of an odd width
+
+    if isEven == true then        
+        for count = 1,halfWidth,1 do
             digForward(WIDTH-1)
             turtle.turnRight()
             digForward()
             turtle.turnRight()
             digForward(WIDTH-1)
-            if count == WIDTH/2 then
+            if count == halfWidth then
                 turtle.turnRight()
                 break
             end
@@ -116,8 +114,7 @@ function minesquare() --Can redo this, move WIDTH blocks and just toggle moving 
             digForward()
             turtle.turnLeft()
         end
-    else
-        local halfWidth = math.floor(WIDTH/2)
+    else        
         for count = 1,halfWidth,1 do
             digForward(WIDTH-1)
             turtle.turnRight()
