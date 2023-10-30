@@ -54,7 +54,14 @@ function emptyInv()
     end
 end
 
-function findEChest()-- Echest is always in slot 1 anyway
+function findEChest()-- Echest is always in slot 1 anyway, add something that looks for slot one first, then searches
+    --E-chest is in slot 1 naturally
+    if turtle.getItemCount(1) ~= 0 then
+        if turtle.getItemDetail(n).name == "enderstorage:ender_chest" then
+            return 1
+        end
+    end
+    -- If the e-chest was moved
     for n = 1,16,1 do
         if turtle.getItemCount(n) ~= 0 then
             if turtle.getItemDetail(n).name == "enderstorage:ender_chest" then
@@ -75,7 +82,7 @@ function existsTable(tableIn, element)
 end
 
 function calculateFuelExpenditure() -- Consider return
-    
+
     local distance = DEPTH*((WIDTH*WIDTH))
 
     if RETURNCOND == true then
@@ -89,7 +96,7 @@ function calculateFuelExpenditure() -- Consider return
     end
 end
 
-function minesquare()
+function minesquare() --Can redo this, move WIDTH blocks and just toggle moving left & right
     turtle.digDown()
     turtle.down()
     --
@@ -123,7 +130,7 @@ function minesquare()
                 turtle.turnLeft()
                 digForward(WIDTH-1)
                 turtle.turnLeft()
-                turtle.turnLeft()
+                turtle.turnLeft() --what? why 2 left turns?
                 break
             end
             turtle.turnLeft()
@@ -139,7 +146,7 @@ function digForward(length)
     end
     for _ = 1,length,1 do
         if everySlotTaken() == true then
-            print("Storage full")
+            print("Storage full! Dumping items...")
             dumpItems()
         end
         turtle.dig()
@@ -154,27 +161,23 @@ end
 
 function everySlotTaken()
     --Cycle through all the slots and get the inventory size
-    local takenSlots = 0
 
     for n = 1,16,1 do
-        if turtle.getItemCount(n) > 0 then
-            takenSlots = takenSlots + 1
+        if turtle.getItemCount(n) == 0 then
+            return false
         end
     end
-    if takenSlots == 16 then
-        return true
-    else
-        return false
-    end
+
+    return true
 end
 
 function main()
-    for count = 1,DEPTH,1 do
+    for _ = 1,DEPTH,1 do
         minesquare()
     end
 
     if RETURNCOND == 1 then
-        for i = 1, DEPTH, 1 do
+        for _ = 1, DEPTH, 1 do
             turtle.up()
         end
     end
@@ -188,7 +191,7 @@ else
         if calculateFuelExpenditure() then
             main()
         else
-            print("Failed refuel attempt, skill issue ig")
+            print("Failed refuel attempt, shutting down...")
         end
     else
         print("Not enough fuel!")
