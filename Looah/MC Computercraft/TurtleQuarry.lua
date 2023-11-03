@@ -3,33 +3,44 @@
     Digs an WIDTH by WIDTH hole, DEPTH blocks deep; specified by the input
     Calculates fuel efficiency
     Recognises a full inventory & dumps excess into ender chest
+    TODO:
+    - Turtle detects ender chest as start, and warns if one is not present
+    - Have an item dump method that uses regular chests otherwise
 ]]
 
-print("Enter quarry depth")
-DEPTH = string.lower(tostring(read()))
+RETURNCOND = 0
+DEPTH = 0
+WIDTH = 0
 
-print("Enter quarry width")
-WIDTH = string.lower(tostring(read()))
+function setDimensions()
+    print("Enter quarry depth")
+    DEPTH = string.lower(tostring(read()))
 
-if WIDTH%2 == 0 then
-    isEven = true
+    print("Enter quarry width")
+    WIDTH = string.lower(tostring(read()))
+    if WIDTH%2 == 0 then
+        EVENWIDTH = true
+    end
 end
 
-print("Shall I return to the original height?")
-returnResponse = string.lower(tostring(read()))
-
-acceptedConditions = {"yes","no","true","false","1","0","y","n"}
-RETURNCOND = 0
-
-for k,v in pairs(acceptedConditions) do
-    if returnResponse == v then
-        if k%2==1 then
-            RETURNCOND = 1
-            break
-        else
-            RETURNCOND = 0
+-- Can redo decisions in a different way
+function setReturnCond()
+    print("Shall I return to the original height?")
+    local returnResponse = string.lower(tostring(read()))
+    local acceptedConditions = {"yes","no",
+                                "true","false",
+                                "1","0",
+                                "y","n",
+                                "yeah","nah"}
+    --Binary switch case
+    for k,v in pairs(acceptedConditions) do
+        if returnResponse == v then
+            if k%2==1 then
+                RETURNCOND = 1
+                break
+            end
         end
-    end
+    end    
 end
 
 function dumpItems()
@@ -99,7 +110,7 @@ function minesquare() --Can redo this, move WIDTH blocks and just toggle moving 
 
     local halfWidth = math.floor(WIDTH/2) -- floor function used in case of an odd width
 
-    if isEven == true then        
+    if EVENWIDTH == true then        
         for count = 1,halfWidth,1 do
             digForward(WIDTH-1)
             turtle.turnRight()
@@ -169,6 +180,8 @@ function everySlotTaken()
 end
 
 function main()
+    setDimensions()
+    setReturnCond()
     for _ = 1,DEPTH,1 do
         minesquare()
     end
