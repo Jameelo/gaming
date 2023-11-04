@@ -4,8 +4,6 @@
     Calculates fuel efficiency
     Recognises a full inventory & dumps excess into ender chest
     TODO:
-    - Turtle detects ender chest as start, and warns if one is not present
-    - Have an item dump method that uses regular chests otherwise
     - Move setup into a single function
     - Make code support rectangular paths
 ]]
@@ -13,6 +11,9 @@
 RETURNCOND = 0
 DEPTH = 0
 WIDTH = 0
+ECPRESENT = false
+EC = "enderstorage:ender_chest" -- Enderstorage Ender chest ID
+VC = "minecraft:chest"          -- Vanilla Chest ID
 
 function setDimensions()
     print("Enter quarry depth")
@@ -45,15 +46,39 @@ function setReturnCond()
 end
 
 function dumpItems()
-    local eSlot = findEChest()
-    if eSlot ~= false then
-        turtle.refuel()
-        turtle.select(eSlot)
-        turtle.placeUp()
-        emptyInv()
-        turtle.digUp()
+    local chestIndex = 0
+    if ECPRESENT then -- if there is an ender chest detected in the inventory
+        chestIndex = findItemBF(EC)
     else
-        print("No E-Chest detected, skill issue")
+        -- Else, ssume there is a regular chest in the inventory, and search for it
+        chestIndex = findItemBF(VC)
+    end
+    if chestIndex ~= 0 then
+        turtle.refuel() -- this is rather greedy, can remove??
+        turtle.select(chestIndex)
+        turtle.placeUp()
+        emptyInv() -- easy as
+        if ECPRESENT then
+            turtle.digUp()
+        end
+    else
+        -- if there isn't a chest, ender or otherwise
+        -- stop & wait until a new chest is inserted into the inventory.
+        -- infinite loop but either a new chest is inserted or I'll restart it anyway so no big deal
+        waitforChest()
+        dumpItems()
+    end
+end
+
+function waitforChest()
+    local wait = true
+    while wait do
+        --Check for a new chest, ender or otherwise.
+        --Infinitely loop until such conditions are met
+        chestIndex = findItemBF(VC) + findItemBF(EC) -- big brain move right here
+        if chestIndex ~= 0 then
+            wait = false
+        end
     end
 end
 
@@ -66,20 +91,16 @@ function emptyInv()
     end
 end
 
-function findEChest()
-    --E-chest is in slot 1 naturally, unless moved.
-    if turtle.getItemCount(1) ~= 0 and turtle.getItemDetail(1).name == "enderstorage:ender_chest" then
-            return 1
-    end
-    -- If the e-chest was moved then just brute force search.
+function findItemBF(ID)
+    -- finds any item passed to it, otherwise returns 0
     for n = 1,16,1 do
         if turtle.getItemCount(n) ~= 0 then
-            if turtle.getItemDetail(n).name == "enderstorage:ender_chest" then
+            if turtle.getItemDetail(n).name == ID then
                 return n
             end
         end
     end
-    return false
+    return 0
 end
 
 function existsTable(tableIn, element)
@@ -187,6 +208,9 @@ function main()
     setDimensions()
     setReturnCond()
     for _ = 1,DEPTH,1 do
+        if findItemBF(EC) ~= 0 then
+            ECPRESENT = true
+        end
         minesquare()
     end
 
@@ -196,6 +220,10 @@ function main()
         end
     end
     dumpItems()
+end
+
+if findItemBF(EC) ~= 0 then
+    ECPRESENT = true
 end
 
 if calculateFuelExpenditure() then
