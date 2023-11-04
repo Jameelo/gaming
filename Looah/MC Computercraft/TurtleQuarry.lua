@@ -6,6 +6,8 @@
     TODO:
     - Turtle detects ender chest as start, and warns if one is not present
     - Have an item dump method that uses regular chests otherwise
+    - Move setup into a single function
+    - Make code support rectangular paths
 ]]
 
 RETURNCOND = 0
@@ -32,7 +34,6 @@ function setReturnCond()
                                 "1","0",
                                 "y","n",
                                 "yeah","nah"}
-    --Binary switch case
     for k,v in pairs(acceptedConditions) do
         if returnResponse == v then
             if k%2==1 then
@@ -44,15 +45,15 @@ function setReturnCond()
 end
 
 function dumpItems()
-    eSlot = findEChest()
+    local eSlot = findEChest()
     if eSlot ~= false then
         turtle.refuel()
         turtle.select(eSlot)
         turtle.placeUp()
         emptyInv()
-        turtle.digUp()   
+        turtle.digUp()
     else
-        print("No E-Chest detected, skill issue")  
+        print("No E-Chest detected, skill issue")
     end
 end
 
@@ -105,12 +106,15 @@ function calculateFuelExpenditure() -- Consider return
 end
 
 function minesquare() --Can redo this, move WIDTH blocks and just toggle moving left & right
+    --THE SPIRAL ALGORITHM!!
+
+    -- dig down to square layer height
     turtle.digDown()
     turtle.down()
 
     local halfWidth = math.floor(WIDTH/2) -- floor function used in case of an odd width
 
-    if EVENWIDTH == true then        
+    if EVENWIDTH == true then
         for count = 1,halfWidth,1 do
             digForward(WIDTH-1)
             turtle.turnRight()
@@ -138,7 +142,7 @@ function minesquare() --Can redo this, move WIDTH blocks and just toggle moving 
                 turtle.turnLeft()
                 digForward(WIDTH-1)
                 turtle.turnLeft()
-                turtle.turnLeft() --what? why 2 left turns?
+                turtle.turnLeft() --2 left turns due to the odd width, the turtle needs to be in the bottom left of the square in the algorithm. redo this.
                 break
             end
             turtle.turnLeft()

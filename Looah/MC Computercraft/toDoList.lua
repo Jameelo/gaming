@@ -1,17 +1,18 @@
 --[[
     This is just to make sure I know how lua works lmao
-    It's a todo list, I can add stuff I need to do so I don't forget & stuff
+    It's a TODOLIST list, I can add stuff I need to do so I don't forget & stuff
     To do file is called "toDoList"
 ]]
 
-local toDo = {} --Table :)
+TODOLIST = {} --To do list in table form
+EXIT = false
 
 function addFunc()
     --append to list
     print("What would you like to add to the list?")
     local task = string.lower(tostring(read()))
-    table.insert(toDo,task)
-    saveFile(toDo)
+    table.insert(TODOLIST,task)
+    saveFile(TODOLIST)
 end
 
 function editFunc(taskIndex, newTask)
@@ -20,14 +21,14 @@ function editFunc(taskIndex, newTask)
     local index = tonumber(read())
     print("And replace it with what?")
     local answer = string.lower(tostring(read()))
-    toDo[index] = answer
-    saveFile(toDo)
+    TODOLIST[index] = answer
+    saveFile(TODOLIST)
     lookFunc()
 end
 
 function lookFunc()
     --print list
-    for i,k in pairs(toDo) do
+    for i,k in pairs(TODOLIST) do
         print(i,k)
     end
 end
@@ -36,8 +37,8 @@ function removeFunc()
     --remove an entry
     print("What entry number do you want to remove?")
     local input = tonumber(read())
-    table.remove(toDo,input)
-    saveFile(toDo)
+    table.remove(TODOLIST,input)
+    saveFile(TODOLIST)
 end
 
 function saveFile(table)
@@ -56,15 +57,17 @@ function loadFile(tableName)
     return readTable
 end
 
-local exit = false
 local paths = {add = addFunc, edit = editFunc, look = lookFunc, remove = removeFunc}
 
-
 if fs.exists("ToDoList") then
-    toDo = loadFile("ToDoList")
+    TODOLIST = loadFile("ToDoList")
+else
+    table.insert(TODOLIST,"Make a todo list!")
+    saveFile(TODOLIST)
+    TODOLIST = loadFile("ToDoList")
 end
 
-while exit == false do
+while EXIT == false do
     print("Would you like to add, edit, look or remove an item?")
     print("Simply say: Add, Edit, Look or Remove")
 
@@ -78,6 +81,6 @@ while exit == false do
     end
 
     if uInput == "exit" then
-        exit = true
+        EXIT = true
     end
 end
