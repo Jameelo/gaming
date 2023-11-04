@@ -54,7 +54,6 @@ function dumpItems()
         chestIndex = findItemBF(VC)
     end
     if chestIndex ~= 0 then
-        turtle.refuel() -- this is rather greedy, can remove??
         turtle.select(chestIndex)
         turtle.placeUp()
         emptyInv() -- easy as
