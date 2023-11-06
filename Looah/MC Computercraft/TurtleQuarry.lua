@@ -6,14 +6,16 @@
     TODO:
     - Move setup into a single function
     - Make code support rectangular paths
+    - Change the way it calculates a full inventory, as currently it slows down mining a lot
 ]]
 
 RETURNCOND = 0
 DEPTH = 0
 WIDTH = 0
 ECPRESENT = false
-EC = "enderstorage:ender_chest" -- Enderstorage Ender chest ID
-VC = "minecraft:chest"          -- Vanilla Chest ID
+CHESTS = {"enderstorage:ender_chest", "minecraft:chest"} -- Just for future changes in case I wanna accept a bunch of different chests.
+EC = CHESTS[1] -- Enderstorage Ender chest ID
+VC = CHESTS[2] -- Vanilla Chest ID
 
 function setDimensions()
     print("Enter quarry depth")
@@ -42,7 +44,7 @@ function setReturnCond()
                 break
             end
         end
-    end    
+    end 
 end
 
 function dumpItems()
@@ -56,7 +58,7 @@ function dumpItems()
     if chestIndex ~= 0 then
         turtle.select(chestIndex)
         turtle.placeUp()
-        emptyInv() -- easy as
+        emptyInv() -- easy as (IT EMPTIES CHESTS TOO DIPSHIT)
         if ECPRESENT then
             turtle.digUp()
         end
@@ -71,10 +73,11 @@ end
 
 function waitforChest()
     local wait = true
+    print("Waiting for chest to be inserted...")
     while wait do
         --Check for a new chest, ender or otherwise.
         --Infinitely loop until such conditions are met
-        chestIndex = findItemBF(VC) + findItemBF(EC) -- big brain move right here
+        chestIndex = findItemBF(VC) + findItemBF(EC) -- sum is zero if there are no chests that fit the bill
         if chestIndex ~= 0 then
             wait = false
         end
@@ -83,10 +86,11 @@ end
 
 function emptyInv()
     for n = 1,16,1 do
-        turtle.select(n)
-        if turtle.getItemCount(n) ~= 0 then
-            turtle.dropUp()
-        end        
+        if turtle.getItemCount(n) then -- if the item count is more than zero
+            if contains(CHESTS,turtle.getItemDetail(n)) == false then -- if the item is not a recognised chest
+                turtle.dropUp()
+            end
+        end
     end
 end
 
@@ -102,11 +106,11 @@ function findItemBF(ID)
     return 0
 end
 
-function existsTable(tableIn, element)
-    for _, value in pairs(tableIn) do
-      if value == element then
-        return true
-      end
+function contains(table,element)
+    for _, value in pairs(table) do
+        if value == element then
+          return true
+        end
     end
     return false
 end
