@@ -4,7 +4,7 @@
     Calculates fuel efficiency
     Recognises a full inventory & dumps excess into ender chest
     TODO:
-    - Move setup into a single function
+    - Move setup into a single function, maybe even allow values to be passed in before runtime as an option
     - Make code support rectangular paths
     - Change the way it calculates a full inventory, as currently it slows down mining a lot
 ]]
@@ -13,16 +13,14 @@ RETURNCOND = 0
 DEPTH = 0
 WIDTH = 0
 ECPRESENT = false
-CHESTS = {"enderstorage:ender_chest", "minecraft:chest"} -- Just for future changes in case I wanna accept a bunch of different chests.
-EC = CHESTS[1] -- Enderstorage Ender chest ID
-VC = CHESTS[2] -- Vanilla Chest ID
+CHESTS = {"enderstorage:ender_chest", "minecraft:chest"} -- LIST OF CHESTS ordered by importance
+EC = CHESTS[1] -- Enderstorage Ender chest ID, this one is special as this chest will link to the main home storage system.
 
 function setDimensions()
     print("Enter quarry depth")
-    DEPTH = string.lower(tostring(read()))
-
+    DEPTH = tonumber(read())
     print("Enter quarry width")
-    WIDTH = string.lower(tostring(read()))
+    WIDTH = tonumber(read())
     if WIDTH%2 == 0 then
         EVENWIDTH = true
     end
@@ -48,17 +46,11 @@ function setReturnCond()
 end
 
 function dumpItems()
-    local chestIndex = 0
-    if ECPRESENT then -- if there is an ender chest detected in the inventory
-        chestIndex = findItemBF(EC)
-    else
-        -- Else, ssume there is a regular chest in the inventory, and search for it
-        chestIndex = findItemBF(VC)
-    end
+    local chestIndex = findChest()
     if chestIndex ~= 0 then
         turtle.select(chestIndex)
         turtle.placeUp()
-        emptyInv() -- easy as (IT EMPTIES CHESTS TOO DIPSHIT)
+        emptyInv()
         if ECPRESENT then
             turtle.digUp()
         end
@@ -77,7 +69,7 @@ function waitforChest()
     while wait do
         --Check for a new chest, ender or otherwise.
         --Infinitely loop until such conditions are met
-        chestIndex = findItemBF(VC) + findItemBF(EC) -- sum is zero if there are no chests that fit the bill
+        chestIndex = findChest()
         if chestIndex ~= 0 then
             wait = false
         end
@@ -85,17 +77,26 @@ function waitforChest()
 end
 
 function emptyInv()
-    for n = 1,16,1 do
-        if turtle.getItemCount(n) then -- if the item count is more than zero
-            if contains(CHESTS,turtle.getItemDetail(n)) == false then -- if the item is not a recognised chest
+    -- for some reason, this only empties the chests in the inventory. too bad!
+    for n = 1,16,1 do -- for all inventory cells
+        if turtle.getItemCount(n) ~= 0 then -- if the item count in this cell is more than zero
+            if not contains(CHESTS,turtle.getItemDetail(n)) then -- if the item in question in not a recognised chest
                 turtle.dropUp()
             end
         end
     end
 end
 
-function findItemBF(ID)
-    -- finds any item passed to it, otherwise returns 0
+function findChest() -- loops through
+    local currChest
+    for k,_ in pairs(CHESTS) do
+        currChest = findItemBF(CHESTS[k])
+        if currChest ~= 0 then return currChest end
+    end
+    return 0
+end
+
+function findItemBF(ID) -- brute force finds any item passed to it, otherwise returns 0
     for n = 1,16,1 do
         if turtle.getItemCount(n) ~= 0 then
             if turtle.getItemDetail(n).name == ID then
@@ -129,49 +130,44 @@ function calculateFuelExpenditure() -- Consider return
     end
 end
 
-function minesquare() --Can redo this, move WIDTH blocks and just toggle moving left & right
-    --THE SPIRAL ALGORITHM!!
+function minesquare(layer)
+    local reverse
+    if layer%2 == 0 and not EVENWIDTH then
+        -- if the width is odd and the current layer count is even
+        reverse = true
+    end
+    for n = 1,WIDTH,1 do
 
-    -- dig down to square layer height
-    turtle.digDown()
-    turtle.down()
-
-    local halfWidth = math.floor(WIDTH/2) -- floor function used in case of an odd width
-
-    if EVENWIDTH == true then
-        for count = 1,halfWidth,1 do
-            digForward(WIDTH-1)
-            turtle.turnRight()
-            digForward()
-            turtle.turnRight()
-            digForward(WIDTH-1)
-            if count == halfWidth then
-                turtle.turnRight()
-                break
-            end
-            turtle.turnLeft()
-            digForward()
-            turtle.turnLeft()
+        -- The first block in a line is mined differently, as the turtle needs to move into said ine.
+        if n == 1 then -- if its the first iteration, then the turtle needs to move down a layer
+            turtle.digDown()
+            turtle.down()
         end
-    else        
-        for count = 1,halfWidth,1 do
-            digForward(WIDTH-1)
-            turtle.turnRight()
-            digForward()
-            turtle.turnRight()
-            digForward(WIDTH-1)
-            if count == halfWidth then
+
+        digForward(WIDTH-1) -- mine out the rest of the line
+
+        if n < WIDTH then -- if the turtle hasn't finished this layer yet
+            if reverse then
+                n = n + 1 -- I hate doing it this way but it ain't broke so I won't fix it
+            end
+            if n%2 == 1 then -- alternate between turning right and left at the end of a line
+                turtle.turnRight()
+                digForward()
+                turtle.turnRight()
+            else
                 turtle.turnLeft()
                 digForward()
                 turtle.turnLeft()
-                digForward(WIDTH-1)
-                turtle.turnLeft()
-                turtle.turnLeft() --2 left turns due to the odd width, the turtle needs to be in the bottom left of the square in the algorithm. redo this.
-                break
             end
-            turtle.turnLeft()
-            digForward()
-            turtle.turnLeft()
+            if reverse then
+                n = n - 1
+            end
+        else
+            if not EVENWIDTH and not reverse then
+                turtle.turnLeft()
+            else
+                turtle.turnRight()
+            end
         end
     end
 end
@@ -210,11 +206,11 @@ end
 function main()
     setDimensions()
     setReturnCond()
-    for _ = 1,DEPTH,1 do
+    for i = 1,DEPTH,1 do
         if findItemBF(EC) ~= 0 then
             ECPRESENT = true
         end
-        minesquare()
+        minesquare(i)
     end
 
     if RETURNCOND == 1 then
