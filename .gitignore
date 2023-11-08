@@ -1,0 +1,32 @@
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages #
+############
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Directories I don't wanna share lol, if I wanna push stuff from these folders I'll make a new dev folder x #
+# These folders are personal so you can change these as you like hahah#
+/.vscode
+/MATLAB
+/Javascript/Learning
+/CCpp/University
+/Python/Learning
+/Python/__pycache__
+/Looah/MC Computercraft/dev
+/Looah/Learning
+/Arduino
+/University
