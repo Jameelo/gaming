@@ -45,7 +45,7 @@ function setReturnCond()
     end 
 end
 
-function dumpItems()
+function dumpItems() -- Need to make this more robust for when a chest cannot be placed above.
     local chestIndex = findChest()
     if chestIndex ~= 0 then
         turtle.select(chestIndex)
