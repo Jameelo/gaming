@@ -3,10 +3,11 @@
 ]]
 
 PACKAGES = {
-    ["stairMaker"] = "QHf8evLE",
+    ["stairMaker"] = "QHf8evLE", -- Need to add item storage stuff to this
     ["quarry"] = "vqbJcqCk",
     ["upQuarry"] = "F19UiGCN",
-    ["elevator"] = "5F9wdhrm"
+    ["elevator"] = "5F9wdhrm",
+    [".commonUtils"] = "placeholder"
 }
 
 INSTALLSHELL = "pastebin get %s %s" -- Replace first string with value, second with key
