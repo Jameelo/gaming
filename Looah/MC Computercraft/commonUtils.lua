@@ -8,7 +8,7 @@
 
 CHESTS = {"enderstorage:ender_chest", "minecraft:ender_chest", "minecraft:chest"}
 ECHESTS = {}
-ECHESTMAX = 2 -- chests in CHESTS up to and including index 1 are all ender chests, anything after are regular chests.
+ECHESTMAX = 2 -- chests in CHESTS up to and including index 2 are all ender chests, anything after are regular chests.
 
 for n = 1,ECHESTMAX,1 do -- make list of ender chests.
     table.insert(ECHESTS, CHESTS[n])
@@ -32,7 +32,7 @@ function dumpItems() -- Need to make this more robust for when a chest cannot be
         if not turtle.detectUp() then
             -- We can place the chest above us
             turtle.placeUp()
-            emptyInvChest("up")
+            emptyInv("up",true)
             if eChest then
                 turtle.digUp()
             end
@@ -45,7 +45,7 @@ function dumpItems() -- Need to make this more robust for when a chest cannot be
                 if not turtle.detect() then
                     -- Can place the chest in this direction
                     turtle.place()
-                    emptyInvChest("front")
+                    emptyInv("front",true)
                     if eChest then
                         turtle.dig()
                     end
@@ -63,24 +63,18 @@ function dumpItems() -- Need to make this more robust for when a chest cannot be
     end
 end
 
-function emptyInvG()
-    -- for some reason, this only empties the chests in the inventory. too bad!
-    for n = 1,16,1 do -- for all inventory cells
-        turtle.select(n)
-        if turtle.getItemCount(n) ~= 0 then -- if the item count in this cell is more than zero
-            turtle.dropUp()
-        end
-    end
-end
-
-function emptyInvChest(direction) -- Empty all BUT chests.
-    local directions = {up = turtle.dropUp,
-                        down = turtle.dropDown,
+function emptyInv(direction, EXCLUDE_CHEST) -- Empty all BUT chests.
+    local directions = {   up = turtle.dropUp,
+                         down = turtle.dropDown,
                         front = turtle.drop}
     for n = 1,16,1 do -- for all inventory cells
+        local drop = true
         turtle.select(n)
         if turtle.getItemCount(n) ~= 0 then -- if the item count in this cell is more than zero
-            if not commonUtils.contains(CHESTS,turtle.getItemDetail(n)) then -- if the item in question in not a recognised chest
+            if EXCLUDE_CHEST and commonUtils.contains(CHESTS,turtle.getItemDetail(n)) then -- If we want to ignore chests, and the item is a chest
+                drop = false
+            end
+            if drop then
                 if directions[direction] then
                     directions[direction]()
                 end
