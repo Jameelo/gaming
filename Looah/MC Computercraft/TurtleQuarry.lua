@@ -70,15 +70,12 @@ function minesquare(layer)
     end
 
     for n = 1,WIDTH,1 do -- Theoretically should be easy to make rectuangular
-
         -- The first block in a line is mined differently, as the turtle needs to move into said ine.
         if n == 1 then -- if its the first iteration, then the turtle needs to move down a layer
             turtle.digDown()
             turtle.down()
         end
-
         commonUtils.digForward(WIDTH-1) -- mine out the rest of the line
-
         if n < WIDTH then -- if the turtle hasn't finished this layer yet
             -- There was a huge bug with odd width quarries, so I'm trying out a boolean "am I turning right or left" value
             if reverse then
@@ -86,11 +83,9 @@ function minesquare(layer)
             else
                 right = true
             end
-
             if n%2 == 0 then
                 right = not right
             end
-            
             if right then -- alternate between turning right and left at the end of a line
                 turtle.turnRight()
                 commonUtils.digForward()
@@ -128,11 +123,11 @@ function main()
     commonUtils.dumpItems()
 end
 
-if calculateFuelExpenditure() then
+if calculateFuelExpenditure() == true then
     main()
 else
     if commonUtils.refuelChestSafe() then
-        if calculateFuelExpenditure() then
+        if calculateFuelExpenditure() == true then
             main()
         else
             print("Failed refuel attempt, shutting down...")

@@ -14,6 +14,13 @@ for n = 1,ECHESTMAX,1 do -- make list of ender chests.
     table.insert(ECHESTS, CHESTS[n])
 end
 
+function apiExists(path)
+    if os.loadAPI(path) ~= false then
+        return true
+    end
+    return false
+end
+
 function dumpItems() -- Need to make this more robust for when a chest cannot be placed above.
     -- Prioritise Ender chests obvs
     local chestIndex = findChest(ECHESTS)
@@ -71,7 +78,7 @@ function emptyInv(direction, EXCLUDE_CHEST) -- Empty all BUT chests.
         local drop = true
         turtle.select(n)
         if turtle.getItemCount(n) ~= 0 then -- if the item count in this cell is more than zero
-            if EXCLUDE_CHEST and commonUtils.contains(CHESTS,turtle.getItemDetail(n)) then -- If we want to ignore chests, and the item is a chest
+            if EXCLUDE_CHEST == true and contains(CHESTS,turtle.getItemDetail(n)) == true then -- If we want to ignore chests, and the item is a chest (also why do I need == true here???)
                 drop = false
             end
             if drop then
@@ -129,17 +136,17 @@ function contains(table,element)
     return false
 end
 
-function digForward(length)
+function digForward(length) -- Variable length dig forward command.
     if length == nil then
         length = 1 -- default
     end
     for _ = 1,length,1 do
+        turtle.dig()
+        turtle.forward()
         if everySlotTaken() == true then
             print("Storage full! Dumping items...")
             dumpItems()
-        end
-        turtle.dig()
-        turtle.forward()
+        end        
     end
 end
 

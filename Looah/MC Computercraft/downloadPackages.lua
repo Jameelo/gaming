@@ -16,17 +16,18 @@ UNINSTALLSHELL = "delete %s"
 print("Performing fresh install of packages\n\n")
 
 for k,v in pairs(PACKAGES) do
+    term.clear()
     print("Program: ",k,"\n\n")
 
     if fs.exists(k) == true then
-        print("Uninstalling...\n\n")
+        print("Uninstalling...\n")
         shell.run(string.format(UNINSTALLSHELL,k))
         print("Uninstallation complete :)\n\n")
     end
-
-    print("Installing...\n\n")
+    print("Installing...\n")
     shell.run(string.format(INSTALLSHELL,v,k))
-    print("Installation complete :)\n\n")
+    print("Installation complete :)\n")
 end
 
+term.clear()
 print("Packages installed.\n\n")
