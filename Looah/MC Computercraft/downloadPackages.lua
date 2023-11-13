@@ -1,5 +1,5 @@
 --[[
-    This software will perform a fresh install of all programs in PACKAGES
+    This software will perform a fresh install of all programs in PACKAGES for turtles.
 ]]
 
 PACKAGES = {

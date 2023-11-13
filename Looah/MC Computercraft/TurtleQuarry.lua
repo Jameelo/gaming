@@ -27,7 +27,6 @@ function setDimensions()
     end
 end
 
--- Can redo decisions in a different way
 function setReturnCond()
     print("Shall I return to the original height?")
     local returnResponse = string.lower(tostring(read()))
@@ -46,8 +45,8 @@ function setReturnCond()
     end 
 end
 
-function calculateFuelExpenditure() -- Consider return
-    local distance = DEPTH*((WIDTH*WIDTH))
+local function calculateFuelExpenditure() -- Calculate how much fuel will be taken from the quarry volume
+    local distance = DEPTH*WIDTH*WIDTH
 
     if RETURNCOND == true then
         distance = distance + DEPTH
@@ -109,8 +108,7 @@ function minesquare(layer)
 end
 
 function main()
-    setDimensions()
-    setReturnCond()
+    term.clear()
     for i = 1,DEPTH,1 do
         minesquare(i)
     end
@@ -121,12 +119,16 @@ function main()
         end
     end
     commonUtils.dumpItems()
+    print("Execution complete, shutting down...")
 end
 
-if calculateFuelExpenditure() == true then
+setDimensions()
+setReturnCond()
+
+if calculateFuelExpenditure() == true then -- I know about the '== true' but it doesn't work otherwise so shut up
     main()
 else
-    if commonUtils.refuelChestSafe() then
+    if commonUtils.refuelChestSafe() == true then
         if calculateFuelExpenditure() == true then
             main()
         else

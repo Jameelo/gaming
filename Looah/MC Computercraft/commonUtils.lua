@@ -111,20 +111,17 @@ function findItemBF(ID) -- brute force finds any item passed to it, otherwise re
 end
 
 function refuelChestSafe() -- Refuel without comsuming any chests
-    local ok, err = turtle.refuel(0) -- See if there's any fuel in the system at all
-    if ok then -- If there is fuel in the turtle in the first place
-        for index = 1,16,1 do
-            turtle.select(index)
+    local isRefueled
+    for index = 1,16,1 do
+        turtle.select(index)
+        local isFuel, _ = turtle.refuel(0) -- See if there's any fuel in this slot
+        if isFuel then
             if not contains(CHESTS,turtle.getItemDetail(index)) then
-                local half = math.ceil(turtle.getItemCount(index)/2) -- Calculate half of what fuel there is
-                turtle.refuel(half)
+                isRefueled = turtle.refuel() -- Om nom nom
             end
         end
-    else
-        printError(err)
-        return false
     end
-    return true
+    return isRefueled
 end
 
 function contains(table,element)
