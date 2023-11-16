@@ -7,7 +7,8 @@ PACKAGES = {
     ["quarry"] = "vqbJcqCk",
     ["upQuarry"] = "F19UiGCN",
     ["elevator"] = "5F9wdhrm",
-    ["commonUtils"] = "qMyK5xrK"
+    ["commonUtils"] = "qMyK5xrK",
+    ["platform"] = "F0HQRDnX"
 }
 
 INSTALLSHELL = "pastebin get %s %s" -- Replace first string with value, second with key

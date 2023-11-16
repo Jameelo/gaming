@@ -15,15 +15,33 @@ os.loadAPI("commonUtils")
 RETURNCOND = 0
 DEPTH = 0
 WIDTH = 0
+UPWARDS = false
 ECPRESENT = false
 
 function setDimensions()
-    print("Enter quarry depth")
+    print("Enter quarry depth: ")
     DEPTH = tonumber(read())
-    print("Enter quarry width")
+    print("Enter quarry width: ")
     WIDTH = tonumber(read())
     if WIDTH%2 == 0 then
         EVENWIDTH = true
+    end
+    -- Shall I go up , or down?
+    print("Shall I go up, or down?")
+    local directionChoice = string.lower(tostring((read())))
+    local acceptedResponses = {"up","down",
+                                "u","d"}
+
+    for index,value in pairs(acceptedResponses) do -- find out what they said
+        if directionChoice == value then
+            if index%2==1 then
+                UPWARDS = true
+                break
+            else
+                UPWARDS = false
+                break
+            end
+        end
     end
 end
 
@@ -71,8 +89,13 @@ function minesquare(layer)
     for n = 1,WIDTH,1 do -- Theoretically should be easy to make rectuangular
         -- The first block in a line is mined differently, as the turtle needs to move into said ine.
         if n == 1 then -- if its the first iteration, then the turtle needs to move down a layer
-            turtle.digDown()
-            turtle.down()
+            if UPWARDS then
+                turtle.digUp()
+                turtle.up()
+            else
+                turtle.digDown()
+                turtle.down()
+            end
         end
         commonUtils.digForward(WIDTH-1) -- mine out the rest of the line
         if n < WIDTH then -- if the turtle hasn't finished this layer yet

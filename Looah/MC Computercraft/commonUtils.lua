@@ -10,11 +10,13 @@ CHESTS = {"enderstorage:ender_chest", "minecraft:ender_chest", "minecraft:chest"
 ECHESTS = {}
 ECHESTMAX = 2 -- chests in CHESTS up to and including index 2 are all ender chests, anything after are regular chests.
 
-for n = 1,ECHESTMAX,1 do -- make list of ender chests.
-    table.insert(ECHESTS, CHESTS[n])
+if ECHESTS == nil then
+    for n = 1,ECHESTMAX,1 do -- make list of ender chests.
+        table.insert(ECHESTS, CHESTS[n])
+    end
 end
 
-function apiExists(path)
+function apiExists(path) -- Check if an API is real or not
     if os.loadAPI(path) ~= false then
         return true
     end
@@ -124,7 +126,7 @@ function refuelChestSafe() -- Refuel without comsuming any chests
     return isRefueled
 end
 
-function contains(table,element)
+function contains(table,element) -- Check to see if element is in table
     for _, value in pairs(table) do
         if value == element then
           return true
@@ -154,5 +156,46 @@ function everySlotTaken()
             return false
         end
     end
+    return true
+end
+
+function dictLookup(dict,item) -- Checks to see if item is a key in dict, and return its value
+    for k,v in pairs(dict) do
+        if k == item then
+            return v
+        end
+    end
+    return false
+end
+
+function placeMoveForward(length, block) -- places the currently selected block & moves forward.
+    --[[
+        Returns:
+        True - returned as length was reached
+        False - returned due to lack of items
+    ]]
+
+    for _ = 1,length,1 do        
+        if turtle.getItemCount() == 0 then -- if no blocks are left, reload.
+            newSlot = findItemBF(block)
+            if newSlot > 0 then -- if there is another stack in the inventory
+                turtle.select(newSlot) -- select another instance of the block
+            else
+                return false -- ran outta blocks
+            end
+        end
+
+        if turtle.detect() then -- if there is an obstacle, even though there shouldn't be.
+            turtle.dig() -- This opens up the possibility of filling the inventory I guess? Not an issue atm.
+        end
+
+        if turtle.detectDown() then
+            turtle.forward()
+        else
+            turtle.placeDown()
+            turtle.forward()
+        end
+    end
+
     return true
 end
