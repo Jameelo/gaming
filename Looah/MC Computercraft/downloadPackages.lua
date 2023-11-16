@@ -8,13 +8,21 @@ PACKAGES = {
     ["upQuarry"] = "F19UiGCN",
     ["elevator"] = "5F9wdhrm",
     ["commonUtils"] = "qMyK5xrK",
-    ["platform"] = "F0HQRDnX"
+    ["platform"] = "F0HQRDnX",
+    ["netherRefuel"] = "yCMci8qT"
 }
 
 INSTALLSHELL = "pastebin get %s %s" -- Replace first string with value, second with key
 UNINSTALLSHELL = "delete %s"
 
 print("Performing fresh install of packages\n\n")
+
+-- MAKE A PROGRESS BAR INSTEAD OF SAYING WHAT ITS INSTALLING
+--[[
+    Using the length of PACKAGES, can make each iteration add a certain length to the loading bar variable.
+    Bar length = local width, _ = term.getSize()
+    clear terminal and then print bar, can still include text.
+]]
 
 for k,v in pairs(PACKAGES) do
     term.clear()
@@ -31,4 +39,8 @@ for k,v in pairs(PACKAGES) do
 end
 
 term.clear()
-print("Packages installed.\n\n")
+print("Packages installed:")
+
+for k,_ in pairs(PACKAGES) do
+    print(k)
+end

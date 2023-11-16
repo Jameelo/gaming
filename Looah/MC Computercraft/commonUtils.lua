@@ -10,11 +10,10 @@ CHESTS = {"enderstorage:ender_chest", "minecraft:ender_chest", "minecraft:chest"
 ECHESTS = {}
 ECHESTMAX = 2 -- chests in CHESTS up to and including index 2 are all ender chests, anything after are regular chests.
 
-if ECHESTS == nil then
-    for n = 1,ECHESTMAX,1 do -- make list of ender chests.
-        table.insert(ECHESTS, CHESTS[n])
-    end
+for n = 1,ECHESTMAX,1 do -- make list of ender chests.
+    table.insert(ECHESTS, CHESTS[n])
 end
+
 
 function apiExists(path) -- Check if an API is real or not
     if os.loadAPI(path) ~= false then
