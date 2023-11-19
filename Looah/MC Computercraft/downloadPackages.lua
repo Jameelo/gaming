@@ -5,7 +5,6 @@
 PACKAGES = {
     ["stairMaker"] = "QHf8evLE", -- Need to add item storage stuff to this
     ["quarry"] = "vqbJcqCk",
-    ["upQuarry"] = "F19UiGCN",
     ["elevator"] = "5F9wdhrm",
     ["commonUtils"] = "qMyK5xrK",
     ["platform"] = "F0HQRDnX",
