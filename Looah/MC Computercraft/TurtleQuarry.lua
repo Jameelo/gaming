@@ -60,7 +60,7 @@ function setReturnCond()
                 break
             end
         end
-    end 
+    end
 end
 
 local function calculateFuelExpenditure() -- Calculate how much fuel will be taken from the quarry volume
@@ -138,7 +138,11 @@ function main()
 
     if RETURNCOND == 1 then
         for _ = 1, DEPTH, 1 do
-            turtle.up()
+            if UPWARDS then
+                turtle.down()
+            else
+                turtle.up()
+            end
         end
     end
     commonUtils.dumpItems()

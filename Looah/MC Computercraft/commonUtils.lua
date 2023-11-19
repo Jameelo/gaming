@@ -40,7 +40,7 @@ function dumpItems() -- Need to make this more robust for when a chest cannot be
         if not turtle.detectUp() then
             -- We can place the chest above us
             turtle.placeUp()
-            emptyInv("up",true)
+            emptyInv("up",not eChest)
             if eChest then
                 turtle.digUp()
             end
@@ -53,7 +53,7 @@ function dumpItems() -- Need to make this more robust for when a chest cannot be
                 if not turtle.detect() then
                     -- Can place the chest in this direction
                     turtle.place()
-                    emptyInv("front",true)
+                    emptyInv("front",not eChest)
                     if eChest then
                         turtle.dig()
                     end
@@ -83,9 +83,7 @@ function emptyInv(direction, EXCLUDE_CHEST) -- Empty all BUT chests.
                 drop = false
             end
             if drop then
-                if directions[direction] then
-                    directions[direction]()
-                end
+                directions[direction]()
             end
         end
     end

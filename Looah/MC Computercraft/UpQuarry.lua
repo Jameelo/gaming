@@ -1,6 +1,6 @@
 --[[
     Not much wbu
-    Same as my normal quarry code but it digs up
+    DEPRICATED!!++
 ]]
 
 print("Enter quarry depth")
