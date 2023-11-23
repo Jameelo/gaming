@@ -71,7 +71,7 @@ function dumpItems() -- Need to make this more robust for when a chest cannot be
     end
 end
 
-function emptyInv(direction, EXCLUDE_CHEST) -- Empty all BUT chests.
+function emptyInv(direction, EXCLUDE_CHEST) -- Empty all BUT chests. Keep an eye on the coupling generated from EXCLUDE_CHEST
     local directions = {   up = turtle.dropUp,
                          down = turtle.dropDown,
                         front = turtle.drop}
