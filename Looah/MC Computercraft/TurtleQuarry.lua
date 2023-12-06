@@ -7,7 +7,6 @@
     - Move setup into a single function, maybe even allow values to be passed in before runtime as an option?
     - Make code support rectangular paths
     - Change the way it calculates a full inventory, as currently it slows down mining a lot
-    - Add a refuel program that doesn't burn chests??
 ]]
 
 os.loadAPI("commonUtils")
