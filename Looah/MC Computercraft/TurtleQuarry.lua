@@ -146,7 +146,8 @@ function main()
         end
     end
     commonUtils.dumpItems()
-    print("Execution complete, shutting down...")
+    write("Execution complete, fuel remaining: ")
+    write(turtle.getFuelLevel())
 end
 
 setDimensions()
