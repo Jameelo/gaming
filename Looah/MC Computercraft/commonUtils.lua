@@ -4,15 +4,11 @@
     to include these function in a program, type:
     os.loadAPI("myApiFile")
     myApiFile.functionName()
+    Add an error function with infinite while loop & error message to ensure the robot doesn't go nuts
 ]]
 
-CHESTS = {"enderstorage:ender_chest", "minecraft:ender_chest", "minecraft:chest"}
-ECHESTS = {}
-ECHESTMAX = 2 -- chests in CHESTS up to and including index 2 are all ender chests, anything after are regular chests.
-
-for n = 1,ECHESTMAX,1 do -- make list of ender chests.
-    table.insert(ECHESTS, CHESTS[n])
-end
+CHESTS = {"minecraft:chest"}
+ECHESTS = {"enderstorage:ender_chest", "minecraft:ender_chest", "enderchests:ender_chest"}
 
 
 function apiExists(path) -- Check if an API is real or not
@@ -24,7 +20,7 @@ end
 
 function dumpItems() -- Need to make this more robust for when a chest cannot be placed above.
     -- Prioritise Ender chests obvs
-    local chestIndex = findChest(ECHESTS)
+    local chestIndex = findChest(ECHESTS) -- Get the index of the ender chest in the inventory, if it exists.
     local eChest = false
     local leftCount = 0
 
@@ -40,20 +36,20 @@ function dumpItems() -- Need to make this more robust for when a chest cannot be
         if not turtle.detectUp() then
             -- We can place the chest above us
             turtle.placeUp()
-            emptyInv("up",not eChest)
+            emptyInv("up",eChest)
             if eChest then
                 turtle.digUp()
             end
             return
         else
             -- If you cannot place the chest above you
-            for _ = 1,3,1 do
+            for _ = 1,4,1 do
                 turtle.turnLeft()
                 leftCount = leftCount + 1
                 if not turtle.detect() then
                     -- Can place the chest in this direction
                     turtle.place()
-                    emptyInv("front",not eChest)
+                    emptyInv("front",eChest)
                     if eChest then
                         turtle.dig()
                     end
@@ -71,15 +67,27 @@ function dumpItems() -- Need to make this more robust for when a chest cannot be
     end
 end
 
-function emptyInv(direction, EXCLUDE_CHEST) -- Empty all BUT chests. Keep an eye on the coupling generated from EXCLUDE_CHEST
-    local directions = {   up = turtle.dropUp,
-                         down = turtle.dropDown,
+function emptyInv(direction, EChestPlaced) -- Dump everything except chests.
+    local directions = {up    = turtle.dropUp,
+                        down  = turtle.dropDown,
                         front = turtle.drop}
+    local drop = true
+
+    if EChestPlaced == true then -- dump everything if the bot has an ender chest
+        for n = 1,16,1 do -- for all inventory cells
+            turtle.select(n)
+            if turtle.getItemCount(n) ~= 0 then
+                directions[direction]()
+            end
+        end
+        return
+    end
+
     for n = 1,16,1 do -- for all inventory cells
-        local drop = true
+        drop = true
         turtle.select(n)
         if turtle.getItemCount(n) ~= 0 then -- if the item count in this cell is more than zero
-            if EXCLUDE_CHEST == true and contains(CHESTS,turtle.getItemDetail(n)) == true then -- If we want to ignore chests, and the item is a chest (also why do I need == true here???)
+            if contains(CHESTS,turtle.getItemDetail(n)) == true or contains(ECHESTS,turtle.getItemDetail(n)) == true then -- If the item is a chest (also why do I need == true here???)
                 drop = false
             end
             if drop then

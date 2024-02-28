@@ -70,4 +70,6 @@ end
 
 if turtle.getFuelLevel() > 2 then -- You only need 1 fuel to start refueling.
     main()
+else
+    print("You need some level of fuel to use this program. Please get at least 3 fuel to proceed.")
 end

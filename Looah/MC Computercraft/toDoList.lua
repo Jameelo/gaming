@@ -4,7 +4,7 @@
     To do file is called "toDoList"
 ]]
 
-TODOLIST = {} --To do list in table form
+TODOLIST = {"Make a todo list!"} --To do list in table form
 EXIT = false
 
 function addFunc()
@@ -60,10 +60,6 @@ end
 local paths = {add = addFunc, edit = editFunc, look = lookFunc, remove = removeFunc}
 
 if fs.exists("ToDoList") then
-    TODOLIST = loadFile("ToDoList")
-else
-    table.insert(TODOLIST,"Make a todo list!")
-    saveFile(TODOLIST)
     TODOLIST = loadFile("ToDoList")
 end
 
