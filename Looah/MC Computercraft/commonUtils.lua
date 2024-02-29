@@ -10,6 +10,9 @@
 CHESTS = {"minecraft:chest"}
 ECHESTS = {"enderstorage:ender_chest", "minecraft:ender_chest", "enderchests:ender_chest"}
 
+function updateAll() -- Work on this to update every program there is, unless a program can update itself
+    
+end
 
 function apiExists(path) -- Check if an API is real or not
     if os.loadAPI(path) ~= false then

@@ -63,8 +63,8 @@ local function main()
         turtle.forward()
     end
     write("Finished with new fuel level = ")
-    write(turtle.getFuelLevel())
-    write("\n")
+    print(turtle.getFuelLevel())
+    print("")
 end
 
 

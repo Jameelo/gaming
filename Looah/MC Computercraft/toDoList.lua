@@ -4,7 +4,7 @@
     To do file is called "toDoList"
 ]]
 
-TODOLIST = {"Make a todo list!"} --To do list in table form
+TODOLIST = {} --To do list in table form
 EXIT = false
 
 function addFunc()
@@ -28,9 +28,12 @@ end
 
 function lookFunc()
     --print list
+    term.clear()
     for i,k in pairs(TODOLIST) do
         print(i,k)
     end
+    print("")
+    print("")
 end
 
 function removeFunc()
@@ -57,26 +60,30 @@ function loadFile(tableName)
     return readTable
 end
 
-local paths = {add = addFunc, edit = editFunc, look = lookFunc, remove = removeFunc}
+local paths = {add = addFunc, edit = editFunc, remove = removeFunc}
 
 if fs.exists("ToDoList") then
+    TODOLIST = loadFile("ToDoList")
+else
+    TODOLIST = {"Foo"}
+    saveFile(TODOLIST)
     TODOLIST = loadFile("ToDoList")
 end
 
 while EXIT == false do
-    print("Would you like to add, edit, look or remove an item?")
-    print("Simply say: Add, Edit, Look or Remove")
+    lookFunc()
+    print("\n")
+    print("Would you like to do?")
+    print("Simply say: Add, Edit, or Remove")
 
     local uInput = string.lower(tostring(read()))
     term.clear()
 
     if paths[uInput] ~= nil then
         paths[uInput]()
-    else    
-        print("Error, command not in function table")
-    end
-
-    if uInput == "exit" then
+    elseif uInput == "exit" then
         EXIT = true
+    else
+        print("Error, unrecognised function")
     end
 end
