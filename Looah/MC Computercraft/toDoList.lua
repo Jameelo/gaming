@@ -72,7 +72,6 @@ end
 
 while EXIT == false do
     lookFunc()
-    print("\n")
     print("Would you like to do?")
     print("Simply say: Add, Edit, or Remove")
 

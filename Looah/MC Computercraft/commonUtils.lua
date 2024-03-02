@@ -1,5 +1,5 @@
 --[[
-    This file will be an API that holds general-purpose funcitons cuz I don't wanna have to re-write them across programs.
+    This file will be an API that holds general-purpose functions cuz I don't wanna have to re-write them across programs.
 
     to include these function in a program, type:
     os.loadAPI("myApiFile")
@@ -10,7 +10,8 @@
 CHESTS = {"minecraft:chest"}
 ECHESTS = {"enderstorage:ender_chest", "minecraft:ender_chest", "enderchests:ender_chest"}
 
-function updateAll() -- Work on this to update every program there is, unless a program can update itself
+function checkUpdate(address) -- Work on this to update every program there is, unless a program can update itself
+    -- Pass in address or use all as a default (turtle and computer)
     
 end
 
@@ -21,8 +22,7 @@ function apiExists(path) -- Check if an API is real or not
     return false
 end
 
-function dumpItems() -- Need to make this more robust for when a chest cannot be placed above.
-    -- Prioritise Ender chests obvs
+function dumpItems() -- Empty the inventory, prioritising ender chest usage
     local chestIndex = findChest(ECHESTS) -- Get the index of the ender chest in the inventory, if it exists.
     local eChest = false
     local leftCount = 0
@@ -78,8 +78,8 @@ function emptyInv(direction, EChestPlaced) -- Dump everything except chests.
 
     if EChestPlaced == true then -- dump everything if the bot has an ender chest
         for n = 1,16,1 do -- for all inventory cells
-            turtle.select(n)
             if turtle.getItemCount(n) ~= 0 then
+                turtle.select(n)
                 directions[direction]()
             end
         end
@@ -88,12 +88,12 @@ function emptyInv(direction, EChestPlaced) -- Dump everything except chests.
 
     for n = 1,16,1 do -- for all inventory cells
         drop = true
-        turtle.select(n)
         if turtle.getItemCount(n) ~= 0 then -- if the item count in this cell is more than zero
             if contains(CHESTS,turtle.getItemDetail(n)) == true or contains(ECHESTS,turtle.getItemDetail(n)) == true then -- If the item is a chest (also why do I need == true here???)
                 drop = false
             end
             if drop then
+                turtle.select(n)
                 directions[direction]()
             end
         end
@@ -102,11 +102,10 @@ end
 
 function findChest(chestArray) -- loops through
     local currChest
-    for k,_ in pairs(chestArray) do
-        currChest = findItemBF(chestArray[k])
-        if currChest ~= 0 then return currChest end
+    for _,chestID in pairs(chestArray) do
+        currChest = findItemBF(chestID)
     end
-    return 0
+    return currChest
 end
 
 function findItemBF(ID) -- brute force finds any item passed to it, otherwise returns 0

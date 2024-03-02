@@ -41,6 +41,7 @@ local function main()
     else
         term.clear()
         print("I don't have a bucket!!")
+        return
     end
 
     -- Don't waste the lava below!

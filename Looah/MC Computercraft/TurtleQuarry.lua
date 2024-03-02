@@ -35,10 +35,10 @@ function setDimensions()
         if directionChoice == value then
             if index%2==1 then
                 UPWARDS = true
-                break
+                return
             else
                 UPWARDS = false
-                break
+                return
             end
         end
     end
@@ -56,7 +56,7 @@ function setReturnCond()
         if returnResponse == v then
             if k%2==1 then
                 RETURNCOND = 1
-                break
+                return
             end
         end
     end
@@ -146,7 +146,7 @@ function main()
     end
     commonUtils.dumpItems()
     write("Execution complete, fuel remaining: ")
-    write(turtle.getFuelLevel())
+    print(turtle.getFuelLevel())
 end
 
 setDimensions()
@@ -159,9 +159,9 @@ else
         if calculateFuelExpenditure() == true then
             main()
         else
-            print("Failed refuel attempt, shutting down...")
+            print("Refuel attempt insufficient, shutting down...")
         end
     else
-        print("Not enough fuel!")
+        print("Failed refuel attempt, shutting down...")
     end
 end
