@@ -1,9 +1,9 @@
 --[[
-    This will make a rectangular platform. Simple as.
+    This will make a rectangular platform, spanning forwards and right.
 ]]
 
 term.clear()
-os.loadAPI("commonUtils")
+os.loadAPI("commonUtils.lua")
 
 LENGTH = 0
 WIDTH = 0
@@ -19,7 +19,7 @@ BLOCKS_AVAILABLE = {
     ["oak planks"] = "minecraft:oak_planks",
     ["spruce planks"] = "minecraft:spruce_planks",
     ["netherrack"] = "minecraft:netherrack",
-    ["netherack"] = "minecraft:netherrack" -- in case they can't spell
+    ["netherack"] = "minecraft:netherrack"
 }
 
 print("Welcome to platform maker!")
@@ -43,7 +43,7 @@ local function setParams() -- Sets width and length of platform
     return false
 end
 
-local function verifyPossible() -- Check if the turt has enough blocks to make the platform & enough fuel.
+local function verifyPossible() -- Check if the turtle has enough blocks to make the platform & enough fuel.
     -- Returns:
     -- false if the platform cannot be made
     -- true if it can

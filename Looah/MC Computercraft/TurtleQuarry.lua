@@ -3,10 +3,6 @@
     Digs an WIDTH by WIDTH hole, DEPTH blocks deep; specified by the input
     Calculates fuel efficiency
     Recognises a full inventory & dumps excess into ender chest
-    TODO:
-    - Move setup into a single function, maybe even allow values to be passed in before runtime as an option?
-    - Make code support rectangular paths
-    - Change the way it calculates a full inventory, as currently it slows down mining a lot
 ]]
 
 os.loadAPI("commonUtils")
@@ -15,7 +11,6 @@ RETURNCOND = 0
 DEPTH = 0
 WIDTH = 0
 UPWARDS = false
-ECPRESENT = false
 
 function setDimensions()
     print("Enter quarry depth: ")

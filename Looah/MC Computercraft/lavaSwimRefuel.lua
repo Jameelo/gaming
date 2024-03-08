@@ -3,9 +3,10 @@
 ]]
 
 term.clear()
-os.loadAPI('commonUtils')
+os.loadAPI('commonUtils.lua')
 LENGTH = 0
 
+-- add args code
 
 print("Welcome to the lava swim refuel program.")
 os.sleep(1)
@@ -15,7 +16,6 @@ print("After finishing, I'll make my way back to you :)\n")
 os.sleep(3)
 
 term.clear()
-
 
 local function setup()
     local incompleteInput = true

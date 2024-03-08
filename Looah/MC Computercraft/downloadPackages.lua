@@ -3,12 +3,13 @@
 ]]
 
 PACKAGES = {
-    ["stairMaker"] = "QHf8evLE", -- Need to add item storage stuff to this
-    ["quarry"] = "vqbJcqCk",
-    ["elevator"] = "5F9wdhrm",
-    ["commonUtils"] = "qMyK5xrK",
-    ["platform"] = "F0HQRDnX",
-    ["netherRefuel"] = "yCMci8qT"
+    ["stairMaker.lua"] = "QHf8evLE", -- Need to add item storage stuff to this
+    ["quarry.lua"] = "aaNTTxMV",
+    ["elevator.lua"] = "5F9wdhrm",
+    ["commonUtils.lua"] = "qMyK5xrK", -- bfl extension cuz it's a Big Fukkin Library
+    ["platform.lua"] = "F0HQRDnX",
+    ["netherRefuel.lua"] = "yCMci8qT",
+    ["startup.lua"] = "tqVxm1HC"
 }
 
 INSTALLSHELL = "pastebin get %s %s" -- Replace first string with value, second with key

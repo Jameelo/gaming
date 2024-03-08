@@ -10,9 +10,8 @@
 CHESTS = {"minecraft:chest"}
 ECHESTS = {"enderstorage:ender_chest", "minecraft:ender_chest", "enderchests:ender_chest"}
 
-function checkUpdate(address) -- Work on this to update every program there is, unless a program can update itself
+function checkUpdate(address,programName) -- Work on this to update every program there is, unless a program can update itself
     -- Pass in address or use all as a default (turtle and computer)
-    
 end
 
 function apiExists(path) -- Check if an API is real or not
@@ -104,8 +103,11 @@ function findChest(chestArray) -- loops through
     local currChest
     for _,chestID in pairs(chestArray) do
         currChest = findItemBF(chestID)
+        if currChest > 0 then
+            return currChest
+        end
     end
-    return currChest
+    return 0
 end
 
 function findItemBF(ID) -- brute force finds any item passed to it, otherwise returns 0
@@ -152,7 +154,7 @@ function digForward(length) -- Variable length dig forward command.
         if everySlotTaken() == true then
             print("Storage full! Dumping items...")
             dumpItems()
-        end        
+        end
     end
 end
 
@@ -205,4 +207,19 @@ function placeMoveForward(length, block) -- places the currently selected block 
     end
 
     return true
+end
+
+function saveFile(table,saveFileID)
+    local tableString = textutils.serialize(table)
+    --save tableString to file
+    local tFile = fs.open(saveFileID, "w")
+    tFile.write(tableString)
+    tFile.close()
+end
+
+function loadFile(fileID) -- read table from file
+    local tFile = fs.open(fileID, "r")
+    local fileContents = tFile.readAll()
+    local readTable = textutils.unserialize(fileContents)
+    return readTable
 end
