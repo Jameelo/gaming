@@ -3,10 +3,10 @@
 ]]
 
 PACKAGES = {
-    ["stairMaker.lua"] = "QHf8evLE", -- Need to add item storage stuff to this
+    ["stairMaker.lua"] = "QHf8evLE",
     ["quarry.lua"] = "aaNTTxMV",
     ["elevator.lua"] = "5F9wdhrm",
-    ["commonUtils.lua"] = "qMyK5xrK", -- bfl extension cuz it's a Big Fukkin Library
+    ["commonUtils.lua"] = "qMyK5xrK",
     ["platform.lua"] = "F0HQRDnX",
     ["netherRefuel.lua"] = "yCMci8qT",
     ["startup.lua"] = "tqVxm1HC"
@@ -17,7 +17,7 @@ UNINSTALLSHELL = "delete %s"
 
 print("Performing fresh install of packages\n\n")
 
--- MAKE A PROGRESS BAR INSTEAD OF SAYING WHAT ITS INSTALLING
+-- MAKE A PROGRESS BAR INSTEAD OF SAYING WHAT ITS INSTALLING CUZ THAT SEEMS REALLY COOL
 --[[
     Using the length of PACKAGES, can make each iteration add a certain length to the loading bar variable.
     Bar length = local width, _ = term.getSize()

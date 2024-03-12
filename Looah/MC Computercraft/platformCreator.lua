@@ -1,5 +1,6 @@
 --[[
     This will make a rectangular platform, spanning forwards and right.
+    Overhaul at some point.
 ]]
 
 term.clear()
@@ -44,9 +45,7 @@ local function setParams() -- Sets width and length of platform
 end
 
 local function verifyPossible() -- Check if the turtle has enough blocks to make the platform & enough fuel.
-    -- Returns:
-    -- false if the platform cannot be made
-    -- true if it can
+    -- Returns false if the platform cannot be made
 
     -- Fuel expenditure is equal to block count
     if turtle.getFuelLevel() < BLOCK_COUNT then -- if there isn't enough fuel
@@ -79,15 +78,15 @@ function main()
         if commonUtils.placeMoveForward(LENGTH-1, BLOCK_ID) == false then -- if the function returns false
             return false
         end
-        if row%2 == 1 and row ~= WIDTH then            
+        if row%2 == 1 and row ~= WIDTH then
             turtle.turnRight()
-            if commonUtils.placeMoveForward(1, BLOCK_ID) == false then -- if the function returns false
+            if commonUtils.placeMoveForward(1, BLOCK_ID) == false then
                 return false
             end
             turtle.turnRight()
         else            
             turtle.turnLeft()
-            if commonUtils.placeMoveForward(1, BLOCK_ID) == false then -- if the function returns false
+            if commonUtils.placeMoveForward(1, BLOCK_ID) == false then
                 return false
             end
             turtle.turnLeft()

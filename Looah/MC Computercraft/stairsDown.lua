@@ -1,6 +1,7 @@
 --[[
     This code will make a turtle dig a downwards staircase with enough headroom to place a staircase in.
     The algorithm I made is periodic repeating at T=2, so a half period will need to be executed for odd values of depth.
+    Fuel efficient but I wouldn't say it's code efficient.
 ]]
 
 ODD_DEPTH = false
@@ -22,7 +23,6 @@ local function initialize()
 end
 
 local function calculateFuelExpenditure()
-    -- How the fuck am I gonna calc this
     local startEXP = 5 -- Amount of fuel needed to reach the periodic mining pattern from start
     local loopsEXP = 6 -- Amount of fuel needed to mine 2 steps in the staircase.
 
@@ -63,10 +63,10 @@ end
 
 local function twoStairs() -- Mine two stair layers
     -- This funciton mines out the actual stairs and ends at a known position
-    -- This algorithm isn't exactly efficient or clean. Oh well!
+    -- This algorithm isn't exactly efficient or clean. But it works!
     turtle.digDown()    -- 1
     turtle.down()
-    turtle.turnLeft() -- turning around is free anyway so who cares
+    turtle.turnLeft()   -- turning around
     turtle.turnLeft()
     turtle.dig()        -- 2
     turtle.digDown()    -- 3
@@ -117,7 +117,6 @@ local function main()
     if calculateFuelExpenditure() == true then
         mineStairs()
     else
-        --expand on this bit please future me :3
         print("Not enough fuel.")
     end
 end

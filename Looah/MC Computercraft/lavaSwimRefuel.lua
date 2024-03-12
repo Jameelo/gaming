@@ -1,12 +1,12 @@
 --[[
-    This project will make the turtle refuel x amount of times by wading through lava, because I'm lazy :3
+    This project will make the turtle refuel x amount of times by wading through lava, because I'm lazy and don't want to constantly feed it coal
 ]]
 
 term.clear()
 os.loadAPI('commonUtils.lua')
 LENGTH = 0
 
--- add args code
+-- add args code!
 
 print("Welcome to the lava swim refuel program.")
 os.sleep(1)

@@ -1,5 +1,5 @@
 --[[
-    This file will be an API that holds general-purpose functions cuz I don't wanna have to re-write them across programs.
+    This file will be an API that holds general-purpose functions cuz I don't wanna have to re-write them across programs. Saves s+
 
     to include these function in a program, type:
     os.loadAPI("myApiFile")
@@ -9,10 +9,6 @@
 
 CHESTS = {"minecraft:chest"}
 ECHESTS = {"enderstorage:ender_chest", "minecraft:ender_chest", "enderchests:ender_chest"}
-
-function checkUpdate(address,programName) -- Work on this to update every program there is, unless a program can update itself
-    -- Pass in address or use all as a default (turtle and computer)
-end
 
 function apiExists(path) -- Check if an API is real or not
     if os.loadAPI(path) ~= false then
@@ -88,7 +84,7 @@ function emptyInv(direction, EChestPlaced) -- Dump everything except chests.
     for n = 1,16,1 do -- for all inventory cells
         drop = true
         if turtle.getItemCount(n) ~= 0 then -- if the item count in this cell is more than zero
-            if contains(CHESTS,turtle.getItemDetail(n)) == true or contains(ECHESTS,turtle.getItemDetail(n)) == true then -- If the item is a chest (also why do I need == true here???)
+            if contains(CHESTS,turtle.getItemDetail(n)) == true or contains(ECHESTS,turtle.getItemDetail(n)) == true then -- If the item is a chest (also why do I need == true here??? Thanks Lua)
                 drop = false
             end
             if drop then
@@ -179,7 +175,6 @@ end
 
 function placeMoveForward(length, block) -- places the currently selected block & moves forward.
     --[[
-        Returns:
         True - returned as length was reached
         False - returned due to lack of items
     ]]

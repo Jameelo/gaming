@@ -46,7 +46,7 @@ function removeFunc()
     commonUtils.saveFile(TODOLIST,TODOSAVEfilename)
 end
 
-local paths = {add = addFunc, edit = editFunc, remove = removeFunc}
+local paths = {add = addFunc, edit = editFunc, remove = removeFunc} -- Function dictionary
 
 if fs.exists(TODOSAVEfilename) then
     TODOLIST = commonUtils.loadFile()

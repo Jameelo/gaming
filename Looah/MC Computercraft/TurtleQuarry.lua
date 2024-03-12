@@ -1,45 +1,99 @@
 --[[
-    Quarry code for a turtle
-    Digs an WIDTH by WIDTH hole, DEPTH blocks deep; specified by the input
-    Calculates fuel efficiency
+    Idea is the same as the last quarry program, except this one can save & resume progress, and handles rectangular quarries.
+    Digs an WIDTH by LENGTH hole, DEPTH blocks deep; specified by the input. Input can also be an argument
+    Calculates fuel expenditure
     Recognises a full inventory & dumps excess into ender chest
+    TODO:
+    - Maybe fix the single restriction:
+        - Length must be more than 1
+    - Fix/overhaul saving protocol
+        - Maybe by generating toolpath per layer? Then it'll store turns as well?
+
+    - SAVING:
+        - have a save file that stores the block number the robot is currently on
+        - Store in a table:
+            - LENGTH
+            - WIDTH
+            - DEPTH
+            - block
+            - layer
+            - upwards
+            - returncond
+        - Have a save function that saves on every block broken and every layer dropped.
+        - Have a resume argument!
+        - Also prompt user that a save file exists, cuz it should get deleted after loading (and at the end of the program)
+        - Find a way to make it restart automatically. Maybe by editing startup?
 ]]
 
-os.loadAPI("commonUtils")
+os.loadAPI("commonUtils.lua")
+running = true
 
-RETURNCOND = 0
-DEPTH = 0
-WIDTH = 0
-UPWARDS = false
+local args = {...}
 
-function setDimensions()
-    print("Enter quarry depth: ")
-    DEPTH = tonumber(read())
-    print("Enter quarry width: ")
-    WIDTH = tonumber(read())
-    if WIDTH%2 == 0 then
-        EVENWIDTH = true
+-- Quarry progress save file ID
+QSAVEPATH = "common/QPROG"
+saveExists = fs.exists(QSAVEPATH)
+
+-- Forward and perpendicular widths
+forwardAxis = 0
+perpendicularAxis = 0
+
+local function getInputInt(inputName,restriction)
+    local illegalInput = true
+
+    if restriction == nil then -- Default
+        restriction = 0
     end
-    -- Shall I go up , or down?
+
+    while illegalInput do
+        print(string.format("How %s should the quarry be?",inputName))
+        input = tonumber(read())
+
+        if input ~= nil and input > restriction then
+            illegalInput = false
+        else
+            term.clear()
+            print(string.format("%s must be an integer larger than %i"),inputName,restriction)
+        end
+    end
+
+    return input
+end
+
+local function quarrySetup()
+    -- Assume the turtle is facing the same direction as user
+
+    -- Width (Left)
+    WIDTH = getInputInt("Wide")
+    QSAVE["width"] = WIDTH
+
+    -- Length (Forwards)
+    LENGTH = getInputInt("Long",1)
+    QSAVE["length"] = LENGTH
+
+    -- Depth (Up/Down)
+    DEPTH = getInputInt("Deep")
+    QSAVE["depth"] = DEPTH
+end
+
+local function upDownReturn() -- determine direction and return choice
+    -- Up or down?
     print("Shall I go up, or down?")
     local directionChoice = string.lower(tostring((read())))
-    local acceptedResponses = {"up","down",
+    local acceptedResponses = {"up","down", -- store binary decisions in even-odd pairs
                                 "u","d"}
-
     for index,value in pairs(acceptedResponses) do -- find out what they said
         if directionChoice == value then
             if index%2==1 then
                 UPWARDS = true
-                return
             else
                 UPWARDS = false
-                return
             end
         end
     end
-end
 
-function setReturnCond()
+    QSAVE["upwards"] = UPWARDS
+
     print("Shall I return to the original height?")
     local returnResponse = string.lower(tostring(read()))
     local acceptedConditions = {"yes","no",
@@ -51,17 +105,41 @@ function setReturnCond()
         if returnResponse == v then
             if k%2==1 then
                 RETURNCOND = 1
-                return
+            else
+                RETURNCOND = 0
             end
         end
     end
+    QSAVE["retCon"] = RETURNCOND
 end
 
-local function calculateFuelExpenditure() -- Calculate how much fuel will be taken from the quarry volume
-    local distance = DEPTH*WIDTH*WIDTH
+local function calculateFuelExpenditure() -- Calculate how much fuel will be taken from the quarry volume. Need to add extra return fuel bits too
+
+    local distance = DEPTH*WIDTH*LENGTH -- minimum distance travelled is the volume of the cube to mine out
 
     if RETURNCOND == true then
         distance = distance + DEPTH
+        if math.fmod(WIDTH,2) == 1 then
+            -- ODD width, ANY length
+            if math.fmod(DEPTH,2) == 1 then
+                distance = distance + LENGTH + WIDTH - 2
+            end
+        elseif math.fmod(LENGTH,2) == 1 then
+            if math.fmod(DEPTH,2) == 1 then
+                distance = distance + WIDTH - 1
+            else
+                distance = distance + LENGTH - 1
+            end
+        else
+            -- EVEN width, EVEN length
+            if math.fmod(DEPTH,4) == 1 then
+                distance = distance + WIDTH - 1
+            elseif math.fmod(DEPTH,4) == 2 then
+                distance = distance + LENGTH + WIDTH - 2
+            elseif math.fmod(DEPTH,4) == 3 then
+                distance = distance + LENGTH - 1
+            end
+        end
     end
 
     if turtle.getFuelLevel() > distance then
@@ -71,92 +149,201 @@ local function calculateFuelExpenditure() -- Calculate how much fuel will be tak
     end
 end
 
-function minesquare(layer)
+local function mineLayer(layer,resumeBlock) -- Mines a layer of blocks LENGTH forwards & WIDTH to the right
+    -- Odometer method.
 
-    local reverse,right
-
-    if layer%2 == 0 and not EVENWIDTH then
-        -- if the width is odd and the current layer count is even
-        reverse = true
+    if resumeBlock == nil then
+        startBlock = 2
+        turtle.digDown()
+        turtle.down()
+    else
+        startBlock = resumeBlock
     end
 
-    for n = 1,WIDTH,1 do -- Theoretically should be easy to make rectuangular
-        -- The first block in a line is mined differently, as the turtle needs to move into said ine.
-        if n == 1 then -- if its the first iteration, then the turtle needs to move down a layer
-            if UPWARDS then
-                turtle.digUp()
-                turtle.up()
+    -- I need to fix this, it runs so much unnecessary code each loop
+    if math.fmod(WIDTH,2) == 1 then
+        -- if the width is odd
+        forwardAxis = LENGTH
+        perpendicularAxis = WIDTH
+    else
+        -- if the width is even
+        if math.fmod(LENGTH,2) == 1 then -- if the length is odd
+            forwardAxis = WIDTH
+            perpendicularAxis = LENGTH
+            if layer == 1 then
+                forwardAxis = LENGTH
+                perpendicularAxis = WIDTH
+            end
+        else -- if the length is even
+            if math.fmod(layer,2) == 0 then
+                forwardAxis = WIDTH
+                perpendicularAxis = LENGTH
             else
-                turtle.digDown()
-                turtle.down()
+                forwardAxis = LENGTH
+                perpendicularAxis = WIDTH
             end
         end
-        commonUtils.digForward(WIDTH-1) -- mine out the rest of the line
-        if n < WIDTH then -- if the turtle hasn't finished this layer yet
-            -- There was a huge bug with odd width quarries, so I'm trying out a boolean "am I turning right or left" value
-            if reverse then
-                right = false
-            else
-                right = true
-            end
-            if n%2 == 0 then
-                right = not right
-            end
-            if right then -- alternate between turning right and left at the end of a line
-                turtle.turnRight()
-                commonUtils.digForward()
-                turtle.turnRight()
-            else
-                turtle.turnLeft()
-                commonUtils.digForward()
-                turtle.turnLeft()
-            end
-            if reverse then
-                right = not right
-            end
+    end
+
+    for block = startBlock,WIDTH*LENGTH,1 do
+        QSAVE["currentBlock"] = block
+        -- On every multiple + 1, turn around
+        if math.fmod(block,forwardAxis) ~= 1 then
+            commonUtils.digForward()
         else
-            if not EVENWIDTH and not reverse then
+            local goingLeft = false
+            -- if odd multiple of LENGTH, turn right. else left.
+            if math.fmod((block-1)/forwardAxis,2) == 0 then
+                goingLeft = true
+            end
+
+            if goingLeft then
+                turtle.turnLeft()
+                commonUtils.digForward()
                 turtle.turnLeft()
             else
                 turtle.turnRight()
+                commonUtils.digForward()
+                turtle.turnRight()
             end
         end
+        commonUtils.saveFile(QSAVE,QSAVEPATH)
+    end
+
+    if math.fmod(perpendicularAxis,2) == 1 then
+        turtle.turnLeft()
+        turtle.turnLeft()
+    else
+        turtle.turnRight()
     end
 end
 
-function main()
-    term.clear()
-    for i = 1,DEPTH,1 do
-        minesquare(i)
-    end
+function returnToStart()
+    -- Returns below the same spot it started in, then moves upwards.
 
-    if RETURNCOND == 1 then
-        for _ = 1, DEPTH, 1 do
-            if UPWARDS then
-                turtle.down()
-            else
-                turtle.up()
-            end
+    if math.fmod(WIDTH,2) == 1 then
+        -- ODD width, ANY length
+        if math.fmod(DEPTH,2) == 1 then
+            commonUtils.digForward(LENGTH-1)
+            turtle.turnRight()
+            commonUtils.digForward(WIDTH-1)
+            turtle.turnRight()
+        end
+    elseif math.fmod(LENGTH,2) == 1 then
+        -- EVEN width, ODD length
+        if math.fmod(DEPTH,2) == 1 then
+            commonUtils.digForward(WIDTH-1)
+            turtle.turnRight()
+        else
+            turtle.turnRight()
+            commonUtils.digForward(LENGTH-1)
+            turtle.turnRight()
+            turtle.turnRight()
+        end
+    else
+        -- EVEN width, EVEN length
+        if math.fmod(DEPTH,4) == 1 then
+            commonUtils.digForward(WIDTH-1)
+            turtle.turnRight()
+        elseif math.fmod(DEPTH,4) == 2 then
+            commonUtils.digForward(LENGTH-1)
+            turtle.turnRight()
+            commonUtils.digForward(WIDTH-1)
+            turtle.turnRight()
+        elseif math.fmod(DEPTH,4) == 3 then
+            turtle.turnRight()
+            commonUtils.digForward(LENGTH-1)
+            turtle.turnRight()
+            turtle.turnRight()
         end
     end
+
+    for _ = 1,DEPTH,1 do
+        turtle.up()
+    end
+end
+
+local function main()
+
+    if saveExists then
+        startIndex = QSAVE["currentLayer"]
+        stBlock = QSAVE["currentBlock"]
+    else
+        startIndex = 1
+        stBlock = nil
+    end
+
+    term.clear()
+
+    for i = startIndex,DEPTH,1 do
+
+        QSAVE["currentLayer"] = i
+        commonUtils.saveFile(QSAVE,QSAVEPATH)
+
+        mineLayer(i,stBlock)
+        if stBlock ~= nil then
+            stBlock = nil
+        end
+    end
+
+    shell.run(string.format("delete %s",QSAVEPATH))
+
+    if RETURNCOND == 1 then
+        returnToStart()
+    end
+
     commonUtils.dumpItems()
     write("Execution complete, fuel remaining: ")
     print(turtle.getFuelLevel())
+    running = false
 end
 
-setDimensions()
-setReturnCond()
+-- Save file declaration
+if saveExists then
+    -- UPWARDS AND RETURNCOND TOO!! 
+    QSAVE = commonUtils.loadFile(QSAVEPATH)
 
-if calculateFuelExpenditure() == true then -- I know about the '== true' but it doesn't work otherwise so shut up
+    WIDTH  = QSAVE.width
+    LENGTH = QSAVE.length
+    DEPTH  = QSAVE.depth
+
+    UPWARDS = QSAVE.upwards
+    RETURNCOND = QSAVE.retCon
+
     main()
 else
-    if commonUtils.refuelChestSafe() == true then
-        if calculateFuelExpenditure() == true then
-            main()
-        else
-            print("Refuel attempt insufficient, shutting down...")
-        end
+    QSAVE = {["width"] = 0,["length"] = 0, ["depth"] = 0, ["currentLayer"] = 0, ["currentBlock"] = 0, ["upwards"] = false, ["retCon"] = 0} -- In order: width, length, depth, current layer, current block, upwards, returncond
+end
+
+if running then
+    if #args == 3 then
+        WIDTH = args[1]
+        QSAVE["width"] = WIDTH
+        LENGTH = args[2]
+        QSAVE["length"] = LENGTH
+        DEPTH = args[3]
+        QSAVE["depth"] = DEPTH
+    elseif #args > 0 then
+        print("If you want to use arguments with this program, use the following three:")
+        print("Width, Length then Depth.")
+        quarrySetup()
     else
-        print("Failed refuel attempt, shutting down...")
+        quarrySetup()
+    end
+
+    upDownReturn()
+
+    if calculateFuelExpenditure() == true then -- I know about the '== true' thing but it doesn't work otherwise :))
+        main()
+    else
+        if commonUtils.refuelChestSafe() == true then
+            if calculateFuelExpenditure() == true then
+                main()
+            else
+                print("Refuel attempt insufficient, shutting down...")
+            end
+        else
+            print("Failed refuel attempt, shutting down...")
+        end
     end
 end
