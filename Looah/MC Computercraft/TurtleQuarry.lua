@@ -3,30 +3,16 @@
     Digs an WIDTH by LENGTH hole, DEPTH blocks deep; specified by the input. Input can also be an argument
     Calculates fuel expenditure
     Recognises a full inventory & dumps excess into ender chest
+    If the turtle is restarted, the program should be able to resume.
     TODO:
     - Maybe fix the single restriction:
         - Length must be more than 1
     - Fix/overhaul saving protocol
         - Maybe by generating toolpath per layer? Then it'll store turns as well?
-
-    - SAVING:
-        - have a save file that stores the block number the robot is currently on
-        - Store in a table:
-            - LENGTH
-            - WIDTH
-            - DEPTH
-            - block
-            - layer
-            - upwards
-            - returncond
-        - Have a save function that saves on every block broken and every layer dropped.
-        - Have a resume argument!
-        - Also prompt user that a save file exists, cuz it should get deleted after loading (and at the end of the program)
-        - Find a way to make it restart automatically. Maybe by editing startup?
+        
 ]]
 
 os.loadAPI("commonUtils.lua")
-running = true
 
 local args = {...}
 
@@ -38,7 +24,7 @@ saveExists = fs.exists(QSAVEPATH)
 forwardAxis = 0
 perpendicularAxis = 0
 
-local function getInputInt(inputName,restriction)
+local function getInputInt(inputName,restriction) -- assign an integer input with restrictions, checking for validity
     local illegalInput = true
 
     if restriction == nil then -- Default
@@ -60,7 +46,7 @@ local function getInputInt(inputName,restriction)
     return input
 end
 
-local function quarrySetup()
+local function quarrySetup() -- Get user specified dimensions
     -- Assume the turtle is facing the same direction as user
 
     -- Width (Left)
@@ -110,14 +96,15 @@ local function upDownReturn() -- determine direction and return choice
             end
         end
     end
+
     QSAVE["retCon"] = RETURNCOND
 end
 
-local function calculateFuelExpenditure() -- Calculate how much fuel will be taken from the quarry volume. Need to add extra return fuel bits too
+local function calculateFuelExpenditure() -- Calculate how much fuel will be taken from the quarry volume.
 
-    local distance = DEPTH*WIDTH*LENGTH -- minimum distance travelled is the volume of the cube to mine out
+    local distance = DEPTH*WIDTH*LENGTH -- minimum distance travelled is the volume of the cuboid
 
-    if RETURNCOND == true then
+    if RETURNCOND == true then -- Use this decision tree if a return journey is needed.
         distance = distance + DEPTH
         if math.fmod(WIDTH,2) == 1 then
             -- ODD width, ANY length
@@ -149,24 +136,59 @@ local function calculateFuelExpenditure() -- Calculate how much fuel will be tak
     end
 end
 
-local function mineLayer(layer,resumeBlock) -- Mines a layer of blocks LENGTH forwards & WIDTH to the right
-    -- Odometer method.
+local function generateQIS() -- Create the Quarry Instruction Sequence.
+    --[[
+        The quarry instruction sequence is the set of operations the turtle needs to follow in order to mine out the quarry
+        Having the robot follow a single pre-determined path will make saving far less painful than retrofitting it to my old code.
+        Simply save the path after generation.
+        Can either use a pointer value, or remove excecuted instructions. (haven't decided yet)
+    ]]
 
-    if resumeBlock == nil then
-        startBlock = 2
-        turtle.digDown()
-        turtle.down()
-    else
-        startBlock = resumeBlock
+    --[[
+        INSTRUCTION SET DECODER SHOULD BE MADE INTO A DICTIONARY OF FUNCTIONS
+        so each element in inSet can be used as a key to look up :)
+    ]]
+
+    local inSet = {0} -- Reserve the first item for the progress counter (1 to end of path)
+
+    for i = 1,DEPTH,1 do -- For every layer
+        table.insert(inSet,"digdown")
+        table.insert(inSet,"down")
+        for _ = 1,forwardAxis-1,1 do
+            table.insert(inSet,"dig")
+            table.insert(inSet,"forward")
+        end
     end
 
-    -- I need to fix this, it runs so much unnecessary code each loop
+    return inSet
+end
+
+local function executeInstructionSet(instructions)
+    -- Declare instruction set decoder
+    local instructionDecoder = {["down"] = turtle.down,
+                                ["digdown"] = turtle.digDown,
+                                ["dig"] = turtle.dig,
+                                ["forward"] = turtle.forward,
+                                ["right"] = turtle.turnRight,
+                                ["left"] = turtle.turnLeft}
+
+    for ins in instructions do
+        instructionDecoder[ins]() -- Execute the instruction.
+    end
+end
+
+local function mineLayer(layer) -- Mines a layer of blocks LENGTH forwards & WIDTH to the right
+    -- Odometer method.
+
+    turtle.digDown()
+    turtle.down()
+
+    -- Determine which dimension is the axis being travelled down, and which is perpendicular to the bot.
     if math.fmod(WIDTH,2) == 1 then
         -- if the width is odd
         forwardAxis = LENGTH
         perpendicularAxis = WIDTH
-    else
-        -- if the width is even
+    else-- if the width is even
         if math.fmod(LENGTH,2) == 1 then -- if the length is odd
             forwardAxis = WIDTH
             perpendicularAxis = LENGTH
@@ -185,8 +207,7 @@ local function mineLayer(layer,resumeBlock) -- Mines a layer of blocks LENGTH fo
         end
     end
 
-    for block = startBlock,WIDTH*LENGTH,1 do
-        QSAVE["currentBlock"] = block
+    for block = 2,WIDTH*LENGTH,1 do
         -- On every multiple + 1, turn around
         if math.fmod(block,forwardAxis) ~= 1 then
             commonUtils.digForward()
@@ -218,8 +239,9 @@ local function mineLayer(layer,resumeBlock) -- Mines a layer of blocks LENGTH fo
     end
 end
 
-function returnToStart()
+local function returnToStart()
     -- Returns below the same spot it started in, then moves upwards.
+    -- When it comes to saving here, overwrite the WHOLE FILE to indicate that the program needs to resume here.
 
     if math.fmod(WIDTH,2) == 1 then
         -- ODD width, ANY length
@@ -264,10 +286,9 @@ function returnToStart()
 end
 
 local function main()
-
     if saveExists then
         startIndex = QSAVE["currentLayer"]
-        stBlock = QSAVE["currentBlock"]
+        -- Check to see if the robot is on the return journey.
     else
         startIndex = 1
         stBlock = nil
@@ -276,31 +297,21 @@ local function main()
     term.clear()
 
     for i = startIndex,DEPTH,1 do
-
         QSAVE["currentLayer"] = i
         commonUtils.saveFile(QSAVE,QSAVEPATH)
 
-        mineLayer(i,stBlock)
-        if stBlock ~= nil then
-            stBlock = nil
-        end
+        mineLayer(i)
     end
-
-    shell.run(string.format("delete %s",QSAVEPATH))
 
     if RETURNCOND == 1 then
         returnToStart()
     end
 
     commonUtils.dumpItems()
-    write("Execution complete, fuel remaining: ")
-    print(turtle.getFuelLevel())
-    running = false
 end
 
 -- Save file declaration
-if saveExists then
-    -- UPWARDS AND RETURNCOND TOO!! 
+if saveExists then -- load the existing save
     QSAVE = commonUtils.loadFile(QSAVEPATH)
 
     WIDTH  = QSAVE.width
@@ -311,11 +322,11 @@ if saveExists then
     RETURNCOND = QSAVE.retCon
 
     main()
-else
+else -- make a new save
     QSAVE = {["width"] = 0,["length"] = 0, ["depth"] = 0, ["currentLayer"] = 0, ["currentBlock"] = 0, ["upwards"] = false, ["retCon"] = 0} -- In order: width, length, depth, current layer, current block, upwards, returncond
 end
 
-if running then
+if saveExists == false then
     if #args == 3 then
         WIDTH = args[1]
         QSAVE["width"] = WIDTH
@@ -347,3 +358,7 @@ if running then
         end
     end
 end
+
+shell.run(string.format("delete %s",QSAVEPATH)) -- remove save file once the program is complete
+write("Execution complete, fuel remaining: ")
+print(turtle.getFuelLevel())
