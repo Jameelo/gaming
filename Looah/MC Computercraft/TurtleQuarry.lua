@@ -9,7 +9,7 @@
         - Length must be more than 1
     - Fix/overhaul saving protocol
         - Maybe by generating toolpath per layer? Then it'll store turns as well?
-        
+                
 ]]
 
 os.loadAPI("commonUtils.lua")
@@ -133,47 +133,6 @@ local function calculateFuelExpenditure() -- Calculate how much fuel will be tak
         return true
     else
         return false
-    end
-end
-
-local function generateQIS() -- Create the Quarry Instruction Sequence.
-    --[[
-        The quarry instruction sequence is the set of operations the turtle needs to follow in order to mine out the quarry
-        Having the robot follow a single pre-determined path will make saving far less painful than retrofitting it to my old code.
-        Simply save the path after generation.
-        Can either use a pointer value, or remove excecuted instructions. (haven't decided yet)
-    ]]
-
-    --[[
-        INSTRUCTION SET DECODER SHOULD BE MADE INTO A DICTIONARY OF FUNCTIONS
-        so each element in inSet can be used as a key to look up :)
-    ]]
-
-    local inSet = {0} -- Reserve the first item for the progress counter (1 to end of path)
-
-    for i = 1,DEPTH,1 do -- For every layer
-        table.insert(inSet,"digdown")
-        table.insert(inSet,"down")
-        for _ = 1,forwardAxis-1,1 do
-            table.insert(inSet,"dig")
-            table.insert(inSet,"forward")
-        end
-    end
-
-    return inSet
-end
-
-local function executeInstructionSet(instructions)
-    -- Declare instruction set decoder
-    local instructionDecoder = {["down"] = turtle.down,
-                                ["digdown"] = turtle.digDown,
-                                ["dig"] = turtle.dig,
-                                ["forward"] = turtle.forward,
-                                ["right"] = turtle.turnRight,
-                                ["left"] = turtle.turnLeft}
-
-    for ins in instructions do
-        instructionDecoder[ins]() -- Execute the instruction.
     end
 end
 
