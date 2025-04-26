@@ -49,10 +49,10 @@ end
 local paths = {add = addFunc, edit = editFunc, remove = removeFunc} -- Function dictionary
 
 if fs.exists(TODOSAVEfilename) then
-    TODOLIST = commonUtils.loadFile()
+    TODOLIST = commonUtils.loadFile(TODOSAVEfilename)
 else
     TODOLIST = {"Make a to-do list!"}
-    commonUtils.saveFile(TODOLIST)
+    commonUtils.saveFile(TODOLIST, TODOSAVEfilename)
     TODOLIST = commonUtils.loadFile(TODOSAVEfilename)
 end
 

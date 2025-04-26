@@ -4,7 +4,9 @@
 
 function checkQuarryInterrupted() -- See if the quarry needs resuming
     -- if the save file exists, then run the quarry program as it'll handle the rest.
-    if fs.exists("common/QPROG") then
+    if fs.exists("common/QPROG") then        
+        print("")
+        print("Resuming quarry program...")
         shell.run("quarry.lua")
     else
         print("Quarry program was not in progress when runtime ended.")
@@ -26,7 +28,5 @@ end
 --end
 
 -- Can make this next bit optional by having the quarry program raise a flag when running, and lowering it when not, all inside a save file.
-print("")
-print("Resuming quarry program...")
 
 checkQuarryInterrupted()

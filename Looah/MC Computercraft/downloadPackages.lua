@@ -3,13 +3,15 @@
 ]]
 
 PACKAGES = {
+    ["commonUtils.lua"] = "qMyK5xrK",
     ["stairMaker.lua"] = "QHf8evLE",
     ["quarry.lua"] = "aaNTTxMV",
     ["elevator.lua"] = "5F9wdhrm",
-    ["commonUtils.lua"] = "qMyK5xrK",
     ["platform.lua"] = "F0HQRDnX",
     ["netherRefuel.lua"] = "yCMci8qT",
-    ["startup.lua"] = "tqVxm1HC"
+    ["startup.lua"] = "tqVxm1HC",
+    ["systemLib"] = "q4vfvQPk",
+    ["storageLib"] = "SzD8A2sq",
 }
 
 INSTALLSHELL = "pastebin get %s %s" -- Replace first string with value, second with key
@@ -44,3 +46,5 @@ print("Packages installed:")
 for k,_ in pairs(PACKAGES) do
     print(k)
 end
+
+print("By installing my programs, you hereby waive all rights to complain about any code functionality, issue or intended (evil) features. :3")
