@@ -21,9 +21,19 @@ INSTRUCTIONS = {
     instructionName = instructionFunctionPointer,
 }
 
-toolPath = {} -- Empty toolpath to be written to & decoded
+local runtimeConfig = {}
+local toolPath = {} -- Empty toolpath to be written to & decoded
+
+
 
 -- RECOGNISED CHESTS SHOULD INCLUDE BARRELS!!
+-- ALSO MAKE IT GRAVEL SAFE
+-- Return to same chest at spawn/start (option)
+-- Optional calculateFuelExpenditure
+    -- I don't have enough fuel, shall I go anyway?
+-- When resuming, call the quarry code EXTERNALLY WITH THE SAVED DATA
+-- Progress bar
+
 
 -- What instructions are used?
     -- Forward, turn left/right, dig, digdown, digup

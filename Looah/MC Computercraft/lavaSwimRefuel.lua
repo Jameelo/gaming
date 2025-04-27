@@ -3,10 +3,14 @@
 ]]
 
 term.clear()
-os.loadAPI('commonUtils.lua')
-LENGTH = 0
 
--- add args code!
+os.loadAPI("systemLib.lua")
+os.loadAPI("storageLib.lua")
+
+LENGTH = 0
+ODOMETER = 0
+
+local args = {...}
 
 print("Welcome to the lava swim refuel program.")
 os.sleep(1)
@@ -18,16 +22,21 @@ os.sleep(3)
 term.clear()
 
 local function setup()
-    local incompleteInput = true
-    while incompleteInput do
-        print("How many blocks of lava shall I eat?")
-        LENGTH = tonumber(read())
-        if LENGTH then
-            incompleteInput = false
-            return
+    if #args > 1 then
+        -- if the user specified a distance in the args
+        LENGTH = args[1]
+    else
+        local incompleteInput = true
+        while incompleteInput do
+            print("How many blocks of lava shall I eat?\n 0 means I will go until I'm full or hit an obstruction.")
+            LENGTH = tonumber(read())
+            if LENGTH then
+                incompleteInput = false
+                return
+            end
+            term.clear()
+            print("Error! Enter a proper value please!\n")
         end
-        term.clear()
-        print("Error! Enter a proper value please!\n")
     end
 end
 
@@ -35,7 +44,11 @@ end
 local function main()
     setup()
 
-    local bucket = commonUtils.findItemBF("minecraft:bucket")
+    if LENGTH == 0 then
+        LENGTH = 65535
+    end
+
+    local bucket = storageLib.findItemBF("minecraft:bucket")
     if bucket > 0 then
         turtle.select(bucket)
     else
@@ -53,16 +66,27 @@ local function main()
     for _ = 1,LENGTH-1,1 do -- Fill bucket, eat bucket contents, move forward.
         turtle.place()
         turtle.refuel()
-        turtle.forward()
+        turtle.forward()        
+        if LENGTH > 0 then
+            ODOMETER = ODOMETER + 1
+        end
     end
 
     -- return journey
     turtle.up()
     turtle.turnLeft()
     turtle.turnLeft()
-    for _ = 1,LENGTH+1,1 do
-        turtle.forward()
+
+    if LENGTH > 0 then
+        for _ = 1,LENGTH,1 do
+            turtle.forward()
+        end
+    else
+        for _ = 1,ODOMETER,1 do
+            turtle.forward()
+        end
     end
+
     write("Finished with new fuel level = ")
     print(turtle.getFuelLevel())
     print("")

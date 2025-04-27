@@ -3,7 +3,7 @@
 ]]
 
 function apiExists(path) -- Check if an API is real or not
-    if os.loadAPI(path) ~= false then
+    if fs.exists(path) ~= false then
         return true
     end
     return false

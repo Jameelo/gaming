@@ -24,7 +24,7 @@ function placeMoveForward(length, block) -- places the currently selected block 
 
     for _ = 1,length,1 do        
         if turtle.getItemCount() == 0 then -- if no blocks are left, reload.
-            newSlot = findItemBF(block)
+            newSlot = storageLib.findItemBF(block)
             if newSlot > 0 then -- if there is another stack in the inventory
                 turtle.select(newSlot) -- select another instance of the block
             else

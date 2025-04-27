@@ -2,7 +2,9 @@
     This library deals with interacting with inventories, both internal and external
 ]]
 
-CHESTS = {"minecraft:chest"}
+CHESTS = {"minecraft:chest", "minecraft:barrel", "minecraft:trapped_chest", "aether:treasure_chest", "twilightforest:twilight_oak_chest",
+          "twilightforest:canopy_chest", "twilightforest:mangrove_chest", "twilightforest:dark_chest", "twilightforest:time_chest", "twilightforest:transformation_chest",
+          "twilightforest:mining_chest", "twilightforest:sorting_chest"}
 ECHESTS = {"enderstorage:ender_chest", "minecraft:ender_chest", "enderchests:ender_chest"}
 
 ALLCHESTS = {table.unpack(CHESTS), table.unpack(ECHESTS)}
@@ -11,13 +13,13 @@ function emptyInv(direction, EChestPlaced) -- Dump everything except chests.
     local directions = {up    = turtle.dropUp,
                         down  = turtle.dropDown,
                         front = turtle.drop}
-    local drop = true
+    local drop = false
 
     for n = 1,16,1 do -- for all inventory cells
-        drop = true
+        drop = false
         if turtle.getItemCount(n) ~= 0 then -- if the item count in this cell is more than zero
-            if not EChestPlaced and (contains(ALLCHESTS,turtle.getItemDetail(n)) == true) then -- If the item is a chest (also why do I need == true here??? Thanks Lua)
-                drop = false
+            if not EChestPlaced and systemLib.contains(CHESTS,turtle.getItemDetail(n).name) == false then -- If the item is a chest (also why do I need == true here??? Thanks Lua)
+                drop = true
             end
             if drop then
                 turtle.select(n)
@@ -78,7 +80,7 @@ end
 function findChest(chestArray) -- loops through
     local currChest
     for _,chestID in pairs(chestArray) do
-        currChest = findItemBF(chestID)
+        currChest = storageLib.findItemBF(chestID)
         if currChest > 0 then
             return currChest
         end
@@ -103,7 +105,7 @@ function refuelChestSafe() -- Refuel without comsuming any chests
         turtle.select(index)
         local isFuel, _ = turtle.refuel(0) -- See if there's any fuel in this slot
         if isFuel then
-            if not contains(CHESTS,turtle.getItemDetail(index)) then
+            if not systemLib.contains(CHESTS,turtle.getItemDetail(index).name) then
                 isRefueled = turtle.refuel() -- Om nom nom
             end
         end

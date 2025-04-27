@@ -14,11 +14,15 @@
 
 os.loadAPI("commonUtils.lua") -- commonUtils needs an overhaul at some point icl
 
+os.loadAPI("systemLib.lua")
+os.loadAPI("storageLib.lua")
+os.loadAPI("mineLib.lua")
+
 local args = {...}
 
 -- Quarry progress save file ID
 QSAVEPATH = "common/QPROG"
-saveExists = fs.exists(QSAVEPATH)
+saveExists = false -- fs.exists(QSAVEPATH)
 
 -- Forward and perpendicular widths
 forwardAxis = 0

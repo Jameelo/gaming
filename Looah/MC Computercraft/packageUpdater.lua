@@ -8,10 +8,11 @@ PACKAGES = {
     ["quarry.lua"] = "aaNTTxMV",
     ["elevator.lua"] = "5F9wdhrm",
     ["platform.lua"] = "F0HQRDnX",
-    ["netherRefuel.lua"] = "yCMci8qT",
-    ["startup.lua"] = "tqVxm1HC",
-    ["systemLib"] = "q4vfvQPk",
-    ["storageLib"] = "SzD8A2sq",
+    ["lavaRefuel.lua"] = "yCMci8qT",
+    --["startup.lua"] = "tqVxm1HC",
+    ["systemLib.lua"] = "q4vfvQPk",
+    ["storageLib.lua"] = "SzD8A2sq",
+    ["mineLib.lua"] = "N0mkQCxV",
 }
 
 INSTALLSHELL = "pastebin get %s %s" -- Replace first string with value, second with key
@@ -47,4 +48,4 @@ for k,_ in pairs(PACKAGES) do
     print(k)
 end
 
-print("By installing my programs, you hereby waive all rights to complain about any code functionality, issue or intended (evil) features. :3")
+print("\nBy installing my programs, you hereby waive all rights to complain about any code bug, issue or intended (evil) features.\n:3")
