@@ -36,12 +36,10 @@ function placeMoveForward(length, block) -- places the currently selected block 
             turtle.dig() -- This opens up the possibility of filling the inventory I guess? Not an issue atm.
         end
 
-        if turtle.detectDown() then
-            turtle.forward()
-        else
+        if not turtle.detectDown() then
             turtle.placeDown()
-            turtle.forward()
         end
+        turtle.forward()
     end
 
     return true

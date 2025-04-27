@@ -13,12 +13,13 @@ Basic functionality will be:
 
 os.loadAPI("systemLib.lua")
 os.loadAPI("storageLib.lua")
+os.loadAPI("mineLib.lua")
 
 
 -- Declare important variables
 
 INSTRUCTIONS = {
-    instructionName = instructionFunctionPointer,
+    instructionName = instructionFunctionPointer, -- placeholder :3
 }
 
 local runtimeConfig = {}
@@ -42,10 +43,11 @@ local toolPath = {} -- Empty toolpath to be written to & decoded
 -- Diglayer
 
 local function generateTurtleToolpath(dimensions)
+    --[[
+        Generate toolpath instruction set & save to file.
+        dimensions - object holding the length, width and depth values of the quarry
+    ]]
     -- using the provided 3d dimensions, generate a predefined set of instructions to perform the quarry & save file
-    length = dimensions.x
-    width = dimensions.y
-    depth = dimensions.z
 end
 
 local function intructionDecoder(toolPathFile)

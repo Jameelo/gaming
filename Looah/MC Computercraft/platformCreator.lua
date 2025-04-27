@@ -4,7 +4,10 @@
 ]]
 
 term.clear()
-os.loadAPI("commonUtils.lua")
+
+os.loadAPI("systemLib.lua")
+os.loadAPI("storageLib.lua")
+os.loadAPI("mineLib.lua")
 
 LENGTH = 0
 WIDTH = 0
@@ -37,7 +40,7 @@ local function setParams() -- Sets width and length of platform
     print("What type of block should I use to build this platform?")
     local chosenBlock = string.lower(tostring(read()))
 
-    BLOCK_ID = commonUtils.dictLookup(BLOCKS_AVAILABLE,chosenBlock) -- Get the block ID from the blocks available dictionary using the user input
+    BLOCK_ID = systemLib.dictLookup(BLOCKS_AVAILABLE,chosenBlock) -- Get the block ID from the blocks available dictionary using the user input
     if BLOCK_ID then -- If the user entered a valid block
         return true
     end
@@ -71,22 +74,22 @@ end
 function main()
     print("Beginning platforming.")
 
-    turtle.select(commonUtils.findItemBF(BLOCK_ID)) -- select item
+    turtle.select(storageLib.findItemBF(BLOCK_ID)) -- select item
     turtle.forward()
 
     for row = 1,WIDTH,1 do
-        if commonUtils.placeMoveForward(LENGTH-1, BLOCK_ID) == false then -- if the function returns false
+        if mineLib.placeMoveForward(LENGTH-1, BLOCK_ID) == false then -- if the function returns false
             return false
         end
         if row%2 == 1 and row ~= WIDTH then
             turtle.turnRight()
-            if commonUtils.placeMoveForward(1, BLOCK_ID) == false then
+            if mineLib.placeMoveForward(1, BLOCK_ID) == false then
                 return false
             end
             turtle.turnRight()
         else            
             turtle.turnLeft()
-            if commonUtils.placeMoveForward(1, BLOCK_ID) == false then
+            if mineLib.placeMoveForward(1, BLOCK_ID) == false then
                 return false
             end
             turtle.turnLeft()

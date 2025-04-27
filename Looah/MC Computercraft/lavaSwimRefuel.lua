@@ -66,7 +66,7 @@ local function main()
     for _ = 1,LENGTH-1,1 do -- Fill bucket, eat bucket contents, move forward.
         turtle.place()
         turtle.refuel()
-        turtle.forward()        
+        turtle.forward()
         if LENGTH > 0 then
             ODOMETER = ODOMETER + 1
         end
