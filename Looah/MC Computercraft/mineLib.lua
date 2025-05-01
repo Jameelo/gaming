@@ -6,8 +6,12 @@ function digForward(length) -- Variable length dig forward command.
     if length == nil then
         length = 1 -- default
     end
-    for _ = 1,length,1 do
-        turtle.dig()
+    for _ = 1,length,1 do        
+        -- keep digging until nothing remains in front of you
+        repeat
+            turtle.dig()
+        until not turtle.detect()
+
         turtle.forward()
         if everySlotTaken() == true then
             print("Storage full! Dumping items...")

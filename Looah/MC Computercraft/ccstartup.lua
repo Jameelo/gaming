@@ -10,7 +10,7 @@ LIBRARIES = {
     ["mineLib.lua"] = "N0mkQCxV",
 }
 
-for lib, pbID in LIBRARIES do
+for lib, pbID in pairs(LIBRARIES) do
     if fs.exists(lib) == false then
         print("Reacquiring library: %s", lib)
         shell.run(string.format("pastebin get %s %s", pbID, lib)) -- run full package installer
