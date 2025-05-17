@@ -52,14 +52,16 @@ function printProgressBar(current, max)
     local progress = current/max -- Normalised progress
     local width,_,_ = term.getSize()
     local progressPips, n = width - 2, 0
-    
+
     io.write("[")
-    for n in progressPips do
+    while n < progressPips do
         if (n/progressPips) > progress then
             io.write(".")
         else
             io.write("|")
         end
+        n = n + 1
     end
     io.write("]")
+    print("")
 end
