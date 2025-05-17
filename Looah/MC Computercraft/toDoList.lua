@@ -8,14 +8,14 @@ TODOLIST = {} --To do list in table form
 EXIT = false
 TODOSAVEfilename = "common/ToDoList"
 
-os.loadAPI("commonUtils.lua")
+os.loadAPI("systemLib.lua")
 
 function addFunc()
     --append to list
     print("What would you like to add to the list?")
     local task = string.lower(tostring(read()))
     table.insert(TODOLIST,task)
-    commonUtils.saveFile(TODOLIST,TODOSAVEfilename)
+    systemLib.saveFile(TODOLIST,TODOSAVEfilename)
 end
 
 function editFunc(taskIndex, newTask)
@@ -25,7 +25,7 @@ function editFunc(taskIndex, newTask)
     print("And replace it with what?")
     local answer = string.lower(tostring(read()))
     TODOLIST[index] = answer
-    commonUtils.saveFile(TODOLIST,TODOSAVEfilename)
+    systemLib.saveFile(TODOLIST,TODOSAVEfilename)
     lookFunc()
 end
 
@@ -43,17 +43,17 @@ function removeFunc()
     print("What entry number do you want to remove?")
     local input = tonumber(read())
     table.remove(TODOLIST,input)
-    commonUtils.saveFile(TODOLIST,TODOSAVEfilename)
+    systemLib.saveFile(TODOLIST,TODOSAVEfilename)
 end
 
 local paths = {add = addFunc, edit = editFunc, remove = removeFunc} -- Function dictionary
 
 if fs.exists(TODOSAVEfilename) then
-    TODOLIST = commonUtils.loadFile(TODOSAVEfilename)
+    TODOLIST = systemLib.loadFile(TODOSAVEfilename)
 else
     TODOLIST = {"Make a to-do list!"}
-    commonUtils.saveFile(TODOLIST, TODOSAVEfilename)
-    TODOLIST = commonUtils.loadFile(TODOSAVEfilename)
+    systemLib.saveFile(TODOLIST, TODOSAVEfilename)
+    TODOLIST = systemLib.loadFile(TODOSAVEfilename)
 end
 
 while EXIT == false do

@@ -4,7 +4,7 @@
 
 function checkQuarryInterrupted() -- See if the quarry needs resuming
     -- if the save file exists, then run the quarry program as it'll handle the rest.
-    if fs.exists("common/QPROG") then        
+    if fs.exists("common/QPROG") then
         print("")
         print("Resuming quarry program...")
         shell.run("quarry.lua")

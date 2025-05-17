@@ -10,6 +10,7 @@ function digForward(length) -- Variable length dig forward command.
         -- keep digging until nothing remains in front of you
         repeat
             turtle.dig()
+            os.sleep(0.1)
         until not turtle.detect()
 
         turtle.forward()

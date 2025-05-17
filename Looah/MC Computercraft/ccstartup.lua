@@ -5,9 +5,9 @@
 -- should check to see if all required common libraries are installed
 
 LIBRARIES = {
-    ["systemLib.lua"] = "q4vfvQPk",
-    ["storageLib.lua"] = "SzD8A2sq",
-    ["mineLib.lua"] = "N0mkQCxV",
+    ["common/systemLib.lua"] = "q4vfvQPk",
+    ["common/storageLib.lua"] = "SzD8A2sq",
+    ["common/mineLib.lua"] = "N0mkQCxV",
 }
 
 for lib, pbID in pairs(LIBRARIES) do

@@ -12,8 +12,6 @@
                 
 ]]
 
-os.loadAPI("commonUtils.lua") -- commonUtils needs an overhaul at some point icl
-
 os.loadAPI("systemLib.lua")
 os.loadAPI("storageLib.lua")
 os.loadAPI("mineLib.lua")
@@ -173,7 +171,7 @@ local function mineLayer(layer) -- Mines a layer of blocks LENGTH forwards & WID
     for block = 2,WIDTH*LENGTH,1 do
         -- On every multiple + 1, turn around
         if math.fmod(block,forwardAxis) ~= 1 then
-            commonUtils.digForward()
+            mineLib.digForward()
         else
             local goingLeft = false
             -- if odd multiple of LENGTH, turn right. else left.
@@ -183,15 +181,15 @@ local function mineLayer(layer) -- Mines a layer of blocks LENGTH forwards & WID
 
             if goingLeft then
                 turtle.turnLeft()
-                commonUtils.digForward()
+                mineLib.digForward()
                 turtle.turnLeft()
             else
                 turtle.turnRight()
-                commonUtils.digForward()
+                mineLib.digForward()
                 turtle.turnRight()
             end
         end
-        commonUtils.saveFile(QSAVE,QSAVEPATH)
+        systemLib.saveFile(QSAVE,QSAVEPATH)
     end
 
     if math.fmod(perpendicularAxis,2) == 1 then
@@ -209,35 +207,35 @@ local function returnToStart()
     if math.fmod(WIDTH,2) == 1 then
         -- ODD width, ANY length
         if math.fmod(DEPTH,2) == 1 then
-            commonUtils.digForward(LENGTH-1)
+            mineLib.digForward(LENGTH-1)
             turtle.turnRight()
-            commonUtils.digForward(WIDTH-1)
+            mineLib.digForward(WIDTH-1)
             turtle.turnRight()
         end
     elseif math.fmod(LENGTH,2) == 1 then
         -- EVEN width, ODD length
         if math.fmod(DEPTH,2) == 1 then
-            commonUtils.digForward(WIDTH-1)
+            mineLib.digForward(WIDTH-1)
             turtle.turnRight()
         else
             turtle.turnRight()
-            commonUtils.digForward(LENGTH-1)
+            mineLib.digForward(LENGTH-1)
             turtle.turnRight()
             turtle.turnRight()
         end
     else
         -- EVEN width, EVEN length
         if math.fmod(DEPTH,4) == 1 then
-            commonUtils.digForward(WIDTH-1)
+            mineLib.digForward(WIDTH-1)
             turtle.turnRight()
         elseif math.fmod(DEPTH,4) == 2 then
-            commonUtils.digForward(LENGTH-1)
+            mineLib.digForward(LENGTH-1)
             turtle.turnRight()
-            commonUtils.digForward(WIDTH-1)
+            mineLib.digForward(WIDTH-1)
             turtle.turnRight()
         elseif math.fmod(DEPTH,4) == 3 then
             turtle.turnRight()
-            commonUtils.digForward(LENGTH-1)
+            mineLib.digForward(LENGTH-1)
             turtle.turnRight()
             turtle.turnRight()
         end
@@ -261,7 +259,7 @@ local function main()
 
     for i = startIndex,DEPTH,1 do
         QSAVE["currentLayer"] = i
-        commonUtils.saveFile(QSAVE,QSAVEPATH)
+        systemLib.saveFile(QSAVE,QSAVEPATH)
 
         mineLayer(i)
     end
@@ -270,12 +268,12 @@ local function main()
         returnToStart()
     end
 
-    commonUtils.dumpItems()
+    storageLib.saveFile()
 end
 
 -- Save file declaration
 if saveExists then -- load the existing save
-    QSAVE = commonUtils.loadFile(QSAVEPATH)
+    QSAVE = systemLib.loadFile(QSAVEPATH)
 
     WIDTH  = QSAVE.width
     LENGTH = QSAVE.length
@@ -310,7 +308,7 @@ if saveExists == false then
     if calculateFuelExpenditure() == true then -- I know about the '== true' thing but it doesn't work otherwise :))
         main()
     else
-        if commonUtils.refuelChestSafe() == true then
+        if storageLib.refuelChestSafe() == true then
             if calculateFuelExpenditure() == true then
                 main()
             else

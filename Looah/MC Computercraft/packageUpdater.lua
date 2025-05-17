@@ -3,16 +3,16 @@
 ]]
 
 PACKAGES = {
-    ["commonUtils.lua"] = "qMyK5xrK",
+    ["commonUtils.lua"] = "qMyK5xrK", -- TODO: REMOVE
     ["stairMaker.lua"] = "QHf8evLE",
     ["quarry.lua"] = "aaNTTxMV",
     ["elevator.lua"] = "5F9wdhrm",
     ["platform.lua"] = "F0HQRDnX",
     ["lavaRefuel.lua"] = "yCMci8qT",
-    --["startup.lua"] = "tqVxm1HC",
-    ["systemLib.lua"] = "q4vfvQPk",
-    ["storageLib.lua"] = "SzD8A2sq",
-    ["mineLib.lua"] = "N0mkQCxV",
+  --["startup.lua"] = "tqVxm1HC",
+    ["common/systemLib.lua"] = "q4vfvQPk",
+    ["common/storageLib.lua"] = "SzD8A2sq",
+    ["common/mineLib.lua"] = "N0mkQCxV",
 }
 
 INSTALLSHELL = "pastebin get %s %s" -- Replace first string with value, second with key
@@ -34,11 +34,11 @@ for k,v in pairs(PACKAGES) do
     if fs.exists(k) == true then
         print("Uninstalling...\n")
         shell.run(string.format(UNINSTALLSHELL,k))
-        print("Uninstallation complete :)\n\n")
+        print("Uninstallation complete :\n\n")
     end
     print("Installing...\n")
     shell.run(string.format(INSTALLSHELL,v,k))
-    print("Installation complete :)\n")
+    print("Installation complete :\n")
 end
 
 term.clear()
