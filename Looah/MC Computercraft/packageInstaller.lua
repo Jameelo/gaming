@@ -11,6 +11,8 @@ local PACKAGES = {
     ["common/systemLib.lua"] = "q4vfvQPk",
     ["common/storageLib.lua"] = "SzD8A2sq",
     ["common/mineLib.lua"] = "N0mkQCxV",
+    -- Startup
+    ["startup.lua"] = "tqVxm1HC",
     -- Programs
     ["stairMiner.lua"] = "QHf8evLE",
     ["quarry.lua"] = "aaNTTxMV",
