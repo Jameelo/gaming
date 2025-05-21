@@ -2,6 +2,8 @@
     Library focussed on moving about & mining
 ]]
 
+os.loadAPI("common/storageLib.lua")
+
 function digForward(length) -- Variable length dig forward command.
     if length == nil then
         length = 1 -- default
@@ -14,7 +16,7 @@ function digForward(length) -- Variable length dig forward command.
         until not turtle.detect()
 
         turtle.forward()
-        if everySlotTaken() == true then
+        if storageLib.everySlotTaken() == true then
             print("Storage full! Dumping items...")
             dumpItems()
         end

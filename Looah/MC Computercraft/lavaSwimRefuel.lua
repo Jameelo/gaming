@@ -4,8 +4,8 @@
 
 term.clear()
 
-os.loadAPI("systemLib.lua")
-os.loadAPI("storageLib.lua")
+os.loadAPI("common/systemLib.lua")
+os.loadAPI("common/storageLib.lua")
 
 LENGTH = 0
 ODOMETER = 0

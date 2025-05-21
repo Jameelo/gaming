@@ -12,9 +12,9 @@
                 
 ]]
 
-os.loadAPI("systemLib.lua")
-os.loadAPI("storageLib.lua")
-os.loadAPI("mineLib.lua")
+os.loadAPI("common/systemLib.lua")
+os.loadAPI("common/storageLib.lua")
+os.loadAPI("common/mineLib.lua")
 
 local args = {...}
 

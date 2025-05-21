@@ -2,6 +2,8 @@
     This library deals with interacting with inventories, both internal and external
 ]]
 
+os.loadAPI("common/systemLib.lua")
+
 CHESTS = {"minecraft:chest", "minecraft:barrel", "minecraft:trapped_chest", "aether:treasure_chest", "twilightforest:twilight_oak_chest",
           "twilightforest:canopy_chest", "twilightforest:mangrove_chest", "twilightforest:dark_chest", "twilightforest:time_chest", "twilightforest:transformation_chest",
           "twilightforest:mining_chest", "twilightforest:sorting_chest"}
@@ -13,19 +15,19 @@ function emptyInv(direction, EChestPlaced) -- Dump everything except chests.
     local directions = {up    = turtle.dropUp,
                         down  = turtle.dropDown,
                         front = turtle.drop}
-    local drop = false
+    local drop = true
 
     for n = 1,16,1 do -- for all inventory cells
-        drop = false
         if turtle.getItemCount(n) ~= 0 then -- if the item count in this cell is more than zero
-            if not EChestPlaced and systemLib.contains(CHESTS,turtle.getItemDetail(n).name) == false then -- If the item is a chest (also why do I need == true here??? Thanks Lua)
-                drop = true
+            if systemLib.contains(CHESTS,turtle.getItemDetail(n).name) and not EChestPlaced then -- If the item is a chest, don't dump it unless we've placed an echest
+                drop = false
             end
             if drop then
                 turtle.select(n)
                 directions[direction]()
             end
         end
+        drop = true
     end
 end
 
@@ -80,7 +82,7 @@ end
 function findChest(chestArray) -- loops through
     local currChest
     for _,chestID in pairs(chestArray) do
-        currChest = storageLib.findItemBF(chestID)
+        currChest = findItemBF(chestID)
         if currChest > 0 then
             return currChest
         end

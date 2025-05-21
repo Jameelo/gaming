@@ -8,7 +8,7 @@ TODOLIST = {} --To do list in table form
 EXIT = false
 TODOSAVEfilename = "common/ToDoList"
 
-os.loadAPI("systemLib.lua")
+os.loadAPI("common/systemLib.lua")
 
 function addFunc()
     --append to list
