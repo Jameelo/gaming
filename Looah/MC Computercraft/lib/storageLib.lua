@@ -115,6 +115,21 @@ function refuelChestSafe() -- Refuel without comsuming any chests
     return isRefueled
 end
 
+function calculateFuelPresent() -- Based on the amount of burnables in the inventory, multiplied by their burn time (Will I need to make a dict for this?)
+    local fuelCount = 0
+    for slot in 1,16,1 do
+        turtle.select(slot)
+        if turtle.refuel(0) then
+            -- If we're looking at something burnable right now, calculate how much fuel it can get us by burning one of it (if there's only on in the stack, womp womp)
+            d0 = turtle.getFuelLevel()
+            turtle.refuel(1)
+            fuelDelta = d0 - turtle.getFuelLevel()
+            fuelcount = fuelcount + fuelDelta*turtle.getItemCount(slot)
+        end
+    end
+    return fuelCount
+end
+
 function everySlotTaken()
     --Cycle through all the slots and get the inventory size, if every cell has at least 1 item in it then there's no space left for new items
     for n = 1,16,1 do

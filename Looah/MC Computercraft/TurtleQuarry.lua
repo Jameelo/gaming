@@ -268,7 +268,9 @@ local function main()
         returnToStart()
     end
 
-    storageLib.saveFile()
+    -- dump items here
+
+    systemLib.saveFile()
 end
 
 -- Save file declaration
